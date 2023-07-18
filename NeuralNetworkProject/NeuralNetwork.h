@@ -45,7 +45,7 @@ namespace Sanae {
 		) 
 		{
 			for (Ulong i = 0; i < _In.GetSize(); i++)
-				_In[i] = 1 / (1 + std::exp(-1 * _In[i]));
+				_In[i]   = 1 / (1 + std::exp(-1 * _In[i]));
 		}
 		Matrix& Modifled
 		(
@@ -119,7 +119,7 @@ namespace Sanae {
 		}
 
 		//d‚Ý‚ðo—Í‚µ‚Ü‚·B
-		Matrix GetWeight
+		Matrix& GetWeight
 		(
 			Ulong Num
 		)
