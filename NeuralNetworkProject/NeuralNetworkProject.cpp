@@ -10,116 +10,135 @@ using namespace Sanae;
 void View(Matrix _D) {
 	std::cout << std::boolalpha;
 
-	for (Ulong i = 0; i < _D.GetSize();i++)
+	for (Ulong i = 0; i < _D.GetSize(); i++)
 		std::cout << (_D[i] >= 0.5 ? true : false) << " ";
 }
+bool is_high(double In) {
+	return In >= 0.5;
+}
 
+int MaxAN = 0;
+int MinAN = 0;
+unsigned int MinAN_seed = 0;
 
 void NotCircuit() {
-	NN Not         = { 2,2, (Ulong)time(0UL)};
-	Not.learn_late = 0.7;//100%
+	unsigned int seed_buf = 1689671061;
 
-	//学習させる
-	for (Ulong i = 0; i < 50000; i++) {
-		Matrix In =
-		{
-			{((double)(rand() % 100) / 100) >= 0.5 ? 1.0 : 0 },
-			{((double)(rand() % 100) / 100) >= 0.5 ? 1.0 : 0 }
-		};
-		Matrix Ident
-		{
-			{(double)!In[0]},
-			{(double)!In[1]}
-		};
+	NN Not = { 2,2,2,1,seed_buf };
+	Not.learn_late = 0.7;
+
+	int Accuracy = 0;
+	//学習する前に出力してみる。
+	for (Ulong i = 0; i < 100; i++) {
+		Matrix In = { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
+		Matrix buf = Not.Out(In);
+
+		if (In[0] != is_high(buf[0]) && In[1] != is_high(buf[1]))
+			Accuracy += 1;
+	}
+	printf("Not学習前:正答率は%d%%です。\n", Accuracy);
+
+	//srand((unsigned int)time(NULL));
+
+	//データの学習
+	for (Ulong i = 0; i < 10000; i++) {
+		//データの作成
+		Matrix In = { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
+		Matrix Ident = { {(double)!is_high(In[0])},{(double)!is_high(In[1])} };
 
 		Not.Learn(In, Ident);
 	}
 
-	double Accuracy = 0;
+	int old = Accuracy;
 
-	//結果出力
-	for (Ulong i = 0; i < 10;i++) {
-		Matrix In =
-		{
-			{((double)(rand() % 100) / 100) >= 0.5 ? 1.0 : 0 },
-			{((double)(rand() % 100) / 100) >= 0.5 ? 1.0 : 0 }
-		};
-		printf("\n入力:\n");
-		View(In);
-		printf("\n出力:\n");
+	Accuracy = 0;
 
-		Matrix buf;
-		View(buf = Not.Out(In));
+	//学習結果から出力してみる
+	for (Ulong i = 0; i < 100; i++) {
+		Matrix In = { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
+		Matrix buf = Not.Out(In);
 
-		if (In[0] != (buf[0]>=0.5) && In[1] != (buf[1]>=0.5)) {
-			printf(":正解\n");
+		if (In[0] != is_high(buf[0]) && In[1] != is_high(buf[1]))
 			Accuracy += 1;
-		}
-		else
-		{
-			printf(":不正解\n");
-		}
 	}
 
-	printf("正答率は%d%%でした。\n", (int)Accuracy * 10);
+	printf("Not学習後:正答率は%d%%です。\n\n", Accuracy);
+
+	//学習率
+	Accuracy -= old;
+	if (MaxAN < old)
+		MaxAN = old;
+
+	if (MinAN > Accuracy) {
+		MinAN_seed = seed_buf;
+		MinAN = Accuracy;
+	}
 }
+
+int MaxAA = 0;
+int MinAA = 0;
+unsigned int MinAA_seed = 0;
+
 void And_Circuit() {
-	NN And         = {2,2,(Ulong)time(0UL)};
-	And.learn_late = 0.7;
+	unsigned int buf_seed = (unsigned int)time(0UL);
 
-	//学習させる。
-	for (Ulong i = 0; i < 50000;i++) {
-		Matrix In = 
-		{
-			{((double)(rand() % 100) / 100) >= 0.5 ? 1.0 : 0 },
-			{((double)(rand() % 100) / 100) >= 0.5 ? 1.0 : 0 }
-		};
-		Matrix Ident
-		{
-			{In[0] == In[1] ? 1.0 : 0},
-			{0}
-		};
+	NN And = { 2,2,1,1,buf_seed };
+	And.learn_late = 0.9;
 
-		And.Learn(In,Ident);
-	}
+	int Accuracy = 0;
+	//学習結果から出力してみる
+	for (Ulong i = 0; i < 100; i++) {
+		Matrix In = { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
+		Matrix buf = And.Out(In);
 
-	srand((unsigned int)time(NULL));
-	
-	double Accuracy = 0;
-	//結果出力
-	for (Ulong i = 0; i < 10; i++) {
-		Matrix In =
-		{
-			{((double)(rand() % 100) / 100) >= 0.5 ? 1.0 : 0 },
-			{((double)(rand() % 100) / 100) >= 0.5 ? 1.0 : 0 }
-		};
-		printf("\n入力:\n");
-		View(In);
-		printf("\n出力:\n");
-		Matrix buf;
-		
-		View(buf=And.Out(In));
-
-		if ((In[0] == In[1] && buf[0]) || (In[0] != In[1] && !buf[0]))
-		{
-			printf(":正解\n");
+		if ((In[0] == In[1]) == is_high(buf[0]))
 			Accuracy += 1;
-		}
-		else
-		{
-			printf(":不正解\n");
-		}
+	}
+	printf("And学習前:正答率は%d%%です。\n", Accuracy);
+
+	//データの学習
+	for (Ulong i = 0; i < 50000; i++) {
+		//データの作成
+		Matrix In = { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
+		Matrix Ident = { {(double)(is_high(In[0]) == is_high(In[1]))} };
+
+		And.Learn(In, Ident);
 	}
 
-	printf("正答率は%d%%でした。\n",(int)Accuracy*10);
+	int old = Accuracy;
+	Accuracy = 0;
+
+	//学習結果から出力してみる
+	for (Ulong i = 0; i < 100; i++) {
+		Matrix In = { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
+		Matrix buf = And.Out(In);
+
+		if ((In[0] == In[1]) == is_high(buf[0]))
+			Accuracy += 1;
+	}
+
+	printf("And学習後:正答率は%d%%です。\n\n", Accuracy);
+
+	//学習率
+	Accuracy -= old;
+	if (MaxAA < Accuracy)
+		MaxAA = Accuracy;
+
+	if (MinAA > Accuracy) {
+		MinAA_seed = buf_seed;
+		MinAA = Accuracy;
+	}
 }
 
 int main()
 {
-	srand(time(0UL));
+	srand((unsigned int)time(0UL));
+	while (1) {
+		//Not回路のモデル
+		//NotCircuit();
+		//And回路のモデル
+		And_Circuit();
 
-	//Not回路のモデル
-	NotCircuit();
-	//And回路のモデル
-	And_Circuit();
+		printf("最大学習率:%d,最小学習率:%d,シード:%u\n", MaxAA, MinAA, MinAA_seed);
+	}
 }
