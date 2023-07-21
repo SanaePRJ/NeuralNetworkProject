@@ -29,40 +29,39 @@ int main() {
 
 	std::ifstream ifs;
 
-	for (Ulong i = 0; i < 1;i++) {
-		ifs.open("mnist_train_100.csv");
-		while (buf != '\n' || locate <= 100) {
-			ifs.read((char*)&buf, sizeof(unsigned char));
 
-			if (buf == ',' or buf == '\n') {
-				if (point == -1) {
-					for (Ulong i = 0; i < 10; i++)
-						Idel[i] = 0;
+	ifs.open("mnist_train_100.csv");
+	while (buf != '\n' || locate <= 100) {
+		ifs.read((char*)&buf, sizeof(unsigned char));
 
-					Idel[atoi(read.c_str())] = 1;
-				}
-				else {
-					image[point] = (double)atoi(read.c_str()) / 1000;
-				}
+		if (buf == ',' or buf == '\n') {
+			if (point == -1) {
+				for (Ulong i = 0; i < 10; i++)
+					Idel[i] = 0;
 
-				read = "";
-				point += 1;
+				Idel[atoi(read.c_str())] = 1;
 			}
-			else
-			{
-				read += buf;
+			else {
+				image[point] = (double)atoi(read.c_str()) / 1000;
 			}
 
-			if (buf == '\n') {
-				locate += 1;
-				point = -1;
-
-				Machine.Learn(image, Idel);
-			}
+			read = "";
+			point += 1;
 		}
-		ifs.close();
-		ifs.open("mnist_test_10.csv");
+		else
+		{
+			read += buf;
+		}
+
+		if (buf == '\n') {
+			locate += 1;
+			point = -1;
+
+			Machine.Learn(image, Idel);
+		}
 	}
+	ifs.close();
+	ifs.open("mnist_test_10.csv");
 
 	point  = -1;
 	locate = 1;
