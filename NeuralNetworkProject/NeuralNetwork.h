@@ -46,7 +46,7 @@ namespace Sanae {
 		{
 			//sigmoid(x)= 1 / (1+e^-x)
 			for (Ulong i = 0; i < _In.GetSize(); i++)
-				_In[i]   = 1 / (1 + std::exp(-1 * _In[i]));
+				_In[i] = 1 / (1 + std::exp(-1 * _In[i]));
 		}
 
 		//‚±‚ÌŠÖ”‚É‚æ‚èd‚Ý‚ð‰ü‘P‚·‚éB
@@ -63,8 +63,9 @@ namespace Sanae {
 			Matrix buf = SizeT{ 1,E.GetSizeWH().second };
 			for (Ulong i = 0; i < E.GetSizeWH().second; i++)
 				buf[i] = E[i] * Output[i] * (1 - Output[i]);
-
-			return W += ((buf *= In.Transpose()) *= learn_late);
+				
+			W += ((buf *= In.Transpose()) *= learn_late);
+			return W;
 		}
 
 
@@ -95,18 +96,18 @@ namespace Sanae {
 
 			//“ü—Í‘wd‚Ý‚Ì‰ŠúÝ’è(0.00~0.99)
 			for (Ulong j = 0; j < Weights[0].GetSize(); j++)
-				(Weights[0])[j]                = (double)(rand() % 100) / 100;
-
+				(Weights[0])[j] = (double)(rand() % 1000) / 1000;
+				
 			//o—Í‘wd‚Ý‚Ì‰ŠúÝ’è(0.00~0.99)
 			for (Ulong j = 0; j < Weights[Hidden_Layer + 1].GetSize(); j++)
-				(Weights[Hidden_Layer + 1])[j] = (double)(rand() % 100) / 100;
-
+				(Weights[Hidden_Layer + 1])[j] = (double)(rand() % 1000) / 1000;
+				
 			//‰B‚ê‘wd‚Ý‚Ì‰ŠúÝ’è(0.00~0.99)
 			for (Ulong i = 1; i < Hidden_Layer+1; i++)
 			{
 				Weights[i].SetSize({Hidden_Node,Hidden_Node});
 				for (Ulong j = 0; j < Weights[i].GetSize(); j++)
-					(Weights[i])[j] = (double)(rand() % 100) / 100;
+					(Weights[i])[j] = (double)(rand() % 1000) / 1000;
 			}
 		}
 

@@ -2,123 +2,106 @@
 #include <time.h>
 #include <random>
 #include <fstream>
+#include <string.h>
 
 #include "Matrix.h"
 #include "NeuralNetwork.h"
 
+
 using namespace Sanae;
 
-void View(Matrix _D) {
-	std::cout << std::boolalpha;
 
-	for (Ulong i = 0; i < _D.GetSize(); i++)
-		std::cout << (_D[i] > 0.5 ? true : false) << " ";
-}
-bool is_high(double In) {
-	return In >= 0.5;
-}
-
-void NotCircuit() {
-	NN Not         = { 1,2,1,2,(unsigned int)time(0UL)};
-	Not.learn_late = 0.05;
-
-	int Accuracy = 0;
-	for (Ulong i = 0; i < 100; i++) {
-		Matrix In = { {(double)is_high((double)(rand() % 100) / 100)} };
-		Matrix buf = Not.Out(In);
-
-		if (is_high(buf[0]) != In[0])
-			Accuracy += 1;
-	}
-
-	printf("学習前Not:正答率は%d%%です。\n", Accuracy);
-
-	for (Ulong i = 0; i < 50000; i++) {
-		Matrix In    = { {(double)is_high((double)(rand() % 100) / 100)} };
-		Matrix Ident = { {(double)!(bool)In[0]} };
-
-		Not.Learn(In, Ident);
-	}
-
-	Accuracy = 0;
-	for (Ulong i = 0; i < 100; i++) {
-		Matrix In  = { {(double)is_high((double)(rand() % 100) / 100)} };
-		Matrix buf = Not.Out(In);
-		
-		if (is_high(buf[0]) != In[0])
-			Accuracy += 1;
-	}
-
-	printf("Not:正答率は%d%%です。\n",Accuracy);
-}
-void AndCircuit() {
-	NN And         = { 2,4,1,2,(unsigned int)time(0UL) };
-	And.learn_late = 0.07;
-
-	int Accuracy = 0;
-	for (Ulong i = 0; i < 100; i++) {
-		Matrix In = { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
-		Matrix buf = And.Out(In);
-
-		if ((In[0] == In[1]) && In[0] == is_high(buf[0]))
-			Accuracy += 1;
-	}
-
-	printf("学習前And:正答率は%d%%です。\n", Accuracy);
-
-	for (Ulong i = 0; i < 50000; i++) {
-		Matrix In =    { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
-		Matrix Ident = { {(double)((In[0] == In[1])&&In[0])}};
-			
-		And.Learn(In, Ident);
-	}
-
-	Accuracy = 0;
-	for (Ulong i = 0; i < 100; i++) {
-		Matrix In  = { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
-		Matrix buf = And.Out(In);
-
-		if (((In[0] == In[1]) && In[0])== is_high(buf[0]))
-			Accuracy += 1;
-	}
-
-	printf("And:正答率は%d%%です。\n", Accuracy);
-}
-void OrCircuit() {
-	NN Or         = {2,4,1,1,(unsigned int)time(0UL)};
-	Or.learn_late = 0.01;
-
-	int Accuracy = 0;
-	for (Ulong i = 0; i < 100; i++) {
-		Matrix In = { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
-		Matrix buf = Or.Out(In);
-
-		if ((In[0] || In[1]) == is_high(buf[0]))
-			Accuracy += 1;
-	}
-
-	printf("学習前Or:正答率は%d%%です。\n", Accuracy);
-
-	for (Ulong i = 0; i < 50000; i++) {
-		Matrix In    = { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
-		Matrix Ident = { {(double)(In[0] || In[1])} };
-
-		Or.Learn(In, Ident);
-	}
-
-	Accuracy = 0;
-	for (Ulong i = 0; i < 100; i++) {
-		Matrix In = { {(double)is_high((double)(rand() % 100) / 100)},{(double)is_high((double)(rand() % 100) / 100)} };
-		Matrix buf = Or.Out(In);
-
-		if ((In[0] || In[1]) == is_high(buf[0]))
-			Accuracy += 1;
-	}
-
-	printf("Or:正答率は%d%%です。\n", Accuracy);
-}
+//MNISTデータ学習
 int main() {
-	NotCircuit();
-	AndCircuit();
-	OrCircuit();
+	NN Machine = {784,784,10,2,(unsigned int)time(0UL)};
+	Machine.learn_late = 0.8;
+
+	unsigned char buf  = 0;
+	std::string   read = "";
+
+	Matrix image = SizeT{1,784};
+	Matrix Idel  = SizeT{1,10};
+	
+
+	int    point  = -1;
+	int    locate = 1;
+
+
+	std::ifstream ifs;
+
+	for (Ulong i = 0; i < 1;i++) {
+		ifs.open("mnist_train_100.csv");
+		while (buf != '\n' || locate <= 100) {
+			ifs.read((char*)&buf, sizeof(unsigned char));
+
+			if (buf == ',' or buf == '\n') {
+				if (point == -1) {
+					for (Ulong i = 0; i < 10; i++)
+						Idel[i] = 0;
+
+					Idel[atoi(read.c_str())] = 1;
+				}
+				else {
+					image[point] = (double)atoi(read.c_str()) / 1000;
+				}
+
+				read = "";
+				point += 1;
+			}
+			else
+			{
+				read += buf;
+			}
+
+			if (buf == '\n') {
+				locate += 1;
+				point = -1;
+
+				Machine.Learn(image, Idel);
+			}
+		}
+		ifs.close();
+		ifs.open("mnist_test_10.csv");
+	}
+
+	point  = -1;
+	locate = 1;
+	printf("学習完了しました。\n");
+	system("pause");
+
+	while (buf != '\n' || locate <= 10) {
+		ifs.read((char*)&buf, sizeof(unsigned char));
+
+		if (buf == ',' or buf == '\n') {
+			if (point == -1) {
+				for (Ulong i = 0; i < 10; i++)
+					Idel[i] = 0;
+
+				Idel[atoi(read.c_str())] = 1;
+			}
+			else {
+				image[point] = (double)atoi(read.c_str()) / 1000;
+			}
+
+			read = "";
+			point += 1;
+		}
+		else
+		{
+			read += buf;
+		}
+
+		if (buf == '\n') {
+			locate += 1;
+			point   = -1;
+
+			Matrix a = Machine.Out(image);
+			printf("point:%d\n", locate - 1);
+			a.View();
+			printf("目標値:\n");
+			Idel.View();
+
+			system("pause");
+		}
+	}
 }

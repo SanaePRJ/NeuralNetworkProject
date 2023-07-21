@@ -230,7 +230,6 @@ namespace Sanae{
 
 		std::vector<double> _buf = this->_Main;
 		SizeT           _buf_size = this->_Size;
-
 		this->_Mul(_buf, _buf_size, (std::vector<double>&)_Data._Main, _Data._Size, &_ret, &_ret_size);
 
 		return std::pair<SizeT, std::vector<double>>{_ret_size, _ret};
