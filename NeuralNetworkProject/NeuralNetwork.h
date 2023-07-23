@@ -1,7 +1,7 @@
 /*=============================================================
-* NAME      : NeuralNetwork.h
+* NAME      : MatrixBaseImpl.hpp
 * AUTHOR    : SanaeProject
-* VER       : 1.0.2
+* VER       : 2.0.0
 * COPYRIGHGT: Copyright 2023 SanaeProject.
 =============================================================*/
 
@@ -10,173 +10,114 @@
 #define _SANAE_NEURALNETWORK_H_
 
 
-#include <math.h>
-#include <time.h>
+/*INCLUDE*/
 #include <random>
+#include <math.h>
+
 #include "Matrix.h"
 
 
+
+#if defined(_SANAE_MATRIXBASE_HPP_ALL_INCLUDE_)
+
 namespace Sanae {
-	class NN 
-	{
-	//Define Variable(public)
+	class NN {
 	public:
-		double learn_late = 0.5;   //学習率
-		
-	
-	//Define Variable(private)
+		double Learn_rate = 0.5;
+
+		Matrix I_Weights;	//入力層の重み
+		Matrix O_Weights;	//出力層の重み
+
+
 	private:
-		Ulong In_Node     = 3;     //入力ノード数 
-		Ulong Hidden_Node = 3;     //隠れ層入力ノード数
-		Ulong Output_Node = 3;     //出力ノード数
-
-		Ulong  Hidden_Layer   = 3;   //隠れ層数
-		const Ulong  IO_Layer = 2;   //Input/Output用レイヤー
-
-		std::vector<Matrix> Weights; //重み
-
-	
-	//Define Functions(private)
-	private:
-		//シグモイド関数
-		void Sigmoid
-		(
-			Matrix& _In
-		) 
+		//シグモイド関数を活性化関数とする。
+		void Activation(Matrix& _In)
 		{
-			//sigmoid(x)= 1 / (1+e^-x)
 			for (Ulong i = 0; i < _In.GetSize(); i++)
 				_In[i] = 1 / (1 + std::exp(-1 * _In[i]));
 		}
-
-		//この関数により重みを改善する。
-		Matrix& Modifled
+		void Modifled
 		(
-			Matrix& In,
-			Matrix& W ,
-			Matrix& E
+			Matrix& Input,
+			Matrix& Output,
+			Matrix& Weights,
+			Matrix& Error
 		)
 		{
-			Matrix Output = W * In;
-			Sigmoid(Output);
+			Matrix buf = SizeT{ 1,Error.GetSizeWH().second };
 
-			Matrix buf = SizeT{ 1,E.GetSizeWH().second };
-			for (Ulong i = 0; i < E.GetSizeWH().second; i++)
-				buf[i] = E[i] * Output[i] * (1 - Output[i]);
-				
-			W += ((buf *= In.Transpose()) *= learn_late);
-			return W;
+			for (Ulong i = 0; i < Error.GetSizeWH().second; i++)
+				buf[i] = Error[i] * Output[i] * (1 - Output[i]);
+
+			Weights += (buf *= Input.Transpose()) *= this->Learn_rate;
+
+			return;
 		}
 
-
-	//Define Functions(public)
 	public:
-		//Constructor
 		NN
 		(
-			Ulong        _In_Node,
-			Ulong        _Hidden_Node,
-			Ulong        _Output_Node,
-
-			Ulong        _HLayer,
+			Ulong _Input_Nodes,
+			Ulong _Hidden_Nodes,
+			Ulong _Output_Nodes,
 			unsigned int _Seed
-		) 
-			: In_Node(_In_Node), Hidden_Node(_Hidden_Node), Output_Node(_Output_Node),
-			Hidden_Layer(_HLayer)
-		{
-			//乱数のシード値設定
-			srand(_Seed);
-			//各層の重みを設定
-			Weights.resize(Hidden_Layer+2);
-
-			//入力層->隠れ層
-			Weights[0]               .SetSize({In_Node    , Hidden_Node});
-			//隠れ層->出力層
-			Weights[Hidden_Layer + 1].SetSize({Hidden_Node, Output_Node});
-
-			//入力層重みの初期設定(0.00~0.99)
-			for (Ulong j = 0; j < Weights[0].GetSize(); j++)
-				(Weights[0])[j] = (double)(rand() % 1000) / 1000;
-				
-			//出力層重みの初期設定(0.00~0.99)
-			for (Ulong j = 0; j < Weights[Hidden_Layer + 1].GetSize(); j++)
-				(Weights[Hidden_Layer + 1])[j] = (double)(rand() % 1000) / 1000;
-				
-			//隠れ層重みの初期設定(0.00~0.99)
-			for (Ulong i = 1; i < Hidden_Layer+1; i++)
-			{
-				Weights[i].SetSize({Hidden_Node,Hidden_Node});
-				for (Ulong j = 0; j < Weights[i].GetSize(); j++)
-					(Weights[i])[j] = (double)(rand() % 1000) / 1000;
-			}
-		}
-
-		//出力します。
-		Matrix Out
-		(
-			Matrix& In
-		) 
-		{
-			//各層の出力値を求める。
-			Matrix Out = Weights[0] * In;
-			Sigmoid(Out);
-
-			for (Ulong i = 1; i < this->Hidden_Layer+IO_Layer;i++) {
-				Out = Weights[i] * Out;
-				Sigmoid(Out);
-			}
-
-			return Out;
-		}
-
-		//重みを出力します。
-		Matrix& GetWeight
-		(
-			Ulong Num
 		)
 		{
-			return this->Weights[Num];
+			//シード値設定
+			srand(_Seed);
+
+			//各層の重みを設定
+			I_Weights.SetSize({ _Input_Nodes,_Hidden_Nodes });
+			O_Weights.SetSize({ _Hidden_Nodes,_Output_Nodes });
+
+			//入力層の重み
+			for (Ulong i = 0; i < I_Weights.GetSize(); i++)
+				I_Weights[i] = (double)(rand() % 100) / 100 - 0.5;
+
+			//出力層の重み
+			for (Ulong i = 0; i < O_Weights.GetSize(); i++)
+				O_Weights[i] = (double)(rand() % 100) / 100 - 0.5;
 		}
 
-		//学習します。
+		Matrix Query
+		(
+			Matrix& _Input
+		)
+		{
+			Matrix Output_IH = I_Weights * _Input;
+			this->Activation(Output_IH);
+
+			Matrix Output_HO = O_Weights * Output_IH;
+			this->Activation(Output_HO);
+
+			return Output_HO;
+		}
+
 		void Learn
 		(
-			Matrix& In,
-			Matrix& Ideal
+			Matrix& _Input,
+			Matrix& _Ideal
 		)
 		{
-			//各層出力格納用
-			std::vector<Matrix> Output;
-			Output.resize(this->Hidden_Layer+ IO_Layer);
+			Matrix Output_IH = I_Weights * _Input;
+			this->Activation(Output_IH);
 
-			//各層誤差格納用
-			std::vector<Matrix> Error;
-			Error.resize(this->Hidden_Layer + IO_Layer);
+			Matrix Output_HO = O_Weights * Output_IH;
+			this->Activation(Output_HO);
 
-			//出力を求める。
-			Output[0] = Weights[0] * In;
-			Sigmoid(Output[0]);
 
-			for (Ulong i = 1; i < this->Hidden_Layer+ IO_Layer;i++){
-				Output[i] = Weights[i] * Output[i-1];
-				Sigmoid(Output[i]);
-			}
+			Matrix Output_Error = _Ideal - this->Query(_Input);
+			Matrix Hidden_Error = O_Weights.Transpose() * Output_Error;
 
-			//誤差を求める。
-			Error[this->Hidden_Layer + 1] = Ideal - Output[this->Hidden_Layer + 1];
-			
-			for (Ulong i = this->Hidden_Layer; i > 0; i--)
-				Error[i] = Weights[i + 1].Transpose() * Error[i + 1];
-				
-			Error[0] = Weights[1].Transpose() * Error[1];
+			Modifled(_Input, Output_IH, I_Weights, Hidden_Error);
+			Modifled(Output_IH, Output_HO, O_Weights, Output_Error);
 
-			//重みを調整する
-			Modifled(In, Weights[0], Error[0]);
-			for (Ulong i = 1; i < this->Hidden_Layer + IO_Layer; i++)
-				Modifled(Output[i - 1], Weights[i], Error[i]);
+			return;
 		}
 	};
 }
+
+#endif
 
 
 #endif

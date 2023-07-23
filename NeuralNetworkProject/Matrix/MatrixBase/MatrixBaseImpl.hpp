@@ -16,7 +16,7 @@
 
 
 #if defined(_SANAE_MATRIXBASE_HPP_ALL_INCLUDE_)
-
+bool v = false;
 
 namespace Sanae {
 /*------Function(protected)------*/
@@ -229,11 +229,15 @@ namespace Sanae {
 
 		for (Ulong i = 0; i < _Size1.second; i++) {
 			for (Ulong j = 0; j < _Size2.first; j++) {
-				_T num = 0;
-				for (Ulong k = 0; k < _Size2.second; k++)
+				volatile _T num = 0;
+				for (Ulong k = 0; k < _Size2.second; k++) {
 					num += _Data1[this->_Convert_to_ArrayNum(_Size1.first, { k,i })] * _Data2[this->_Convert_to_ArrayNum(_Size2.first, { j,k })];
+					//if(v)printf("%lf*%lf=%lf\n", _Data1[this->_Convert_to_ArrayNum(_Size1.first, { k,i })], _Data2[this->_Convert_to_ArrayNum(_Size2.first, { j,k })], num);
+				}
+				//if(v)printf("num=%lf\n",num);
 				//Œë·‚ÌC³
 				(*_Storage)[this->_Convert_to_ArrayNum(_SizeP->first, { j,i })] = abs(num - (Slong)num) <= _ERROR_SANAE ? (Slong)num : num;
+				//(*_Storage)[this->_Convert_to_ArrayNum(_SizeP->first, { j,i })] = num;
 			}
 		}
 

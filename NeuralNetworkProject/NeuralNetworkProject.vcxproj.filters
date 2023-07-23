@@ -49,5 +49,11 @@
     <None Include="mnist_test_10.csv">
       <Filter>リソース ファイル</Filter>
     </None>
+    <None Include="mnist_test.csv">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="mnist_train.csv">
+      <Filter>リソース ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>
