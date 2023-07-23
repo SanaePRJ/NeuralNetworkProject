@@ -1,5 +1,5 @@
 /*=============================================================
-* NAME      : MatrixBaseImpl.hpp
+* NAME      : NeuralNetwork.hpp
 * AUTHOR    : SanaeProject
 * VER       : 2.0.0
 * COPYRIGHGT: Copyright 2023 SanaeProject.
