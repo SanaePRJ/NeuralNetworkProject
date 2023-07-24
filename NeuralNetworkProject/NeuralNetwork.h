@@ -35,14 +35,14 @@ namespace Sanae {
 
 	protected:
 		//シグモイド関数を活性化関数とする。
-		void Activation(Matrix& _In)
+		inline void Activation(Matrix& _In)
 		{
 			for (Ulong i = 0; i < _In.GetSize(); i++)
 				_In[i] = 1 / (1 + std::exp(-1 * _In[i]));
 		}
 
 		//Weights(重み)を修正します。
-		void Modifled
+		inline void Modifled
 		(
 			Matrix& Input,
 			Matrix& Output,
@@ -129,12 +129,10 @@ namespace Sanae {
 
 	class RNN : public NN {
 	public:
-
 		Matrix P_Weights;
 		Matrix P_Data;
 
 
-	public:
 	public:
 		//コンストラクタ
 		RNN
@@ -239,8 +237,8 @@ namespace Sanae {
 
 			for (Ulong i = 0; i < P_Weights.GetSize(); i++) {
 				double P_Error = P_Weights[i] * Hidden_Error[i];
-				double Out = P_Weights[i] * P_Data[i];
-				P_Weights[i] += P_Error * Out * (1 - Out) * P_Data[i];
+				double Out     = P_Weights[i] * P_Data[i];
+				P_Weights[i]   += Learn_rate*P_Error * Out * (1 - Out) * P_Data[i];
 			}
 
 			P_Data = Output_IH;

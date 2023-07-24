@@ -10,9 +10,18 @@
 
 using namespace Sanae;
 
+Matrix judge(Matrix In) {
+	Matrix ret = In;
+
+	for (Ulong i = 0; i < In.GetSize(); i++)
+		ret[i] = In[i] > 0.5 ? 1.0 : 0.0;
+
+	return ret;
+}
 
 void RNN_test() {
-	RNN test = {3,6,3,(unsigned int)time(0UL)};
+	RNN test        = {3,6,3,(unsigned int)time(0UL)};
+	test.Learn_rate = 0.07;
 
 	Matrix None = 
 	{
@@ -39,7 +48,7 @@ void RNN_test() {
 		{1}
 	};
 
-	for (Ulong i = 0; i < 10000;i++) {
+	for (Ulong i = 0; i < 50000;i++) {
 		//いよ->し
 		test.In(I);
 		test.Learn(YO, SI);
@@ -73,13 +82,45 @@ void RNN_test() {
 		test.Learn(YO, SI);
 	}
 
-	//いし->よ　をテスト
+	//いよ->し
 	test.In(I);
-	test.Query(SI).View();
+	if (judge(test.Query(YO)) == SI)
+		printf("正解1");
 
-	//よ->し　をテスト
+	//いし->よ
+	test.In(I);
+	if (judge(test.Query(SI)) == YO)
+		printf("正解2");
+
+	//よい->し
+	test.In(YO);
+	if (judge(test.Query(I)) == SI)
+		printf("正解3");
+
+	//よし->い
+	test.In(YO);
+	if (judge(test.Query(SI)) == I)
+		printf("正解4");
+
+	//しい->よ
+	test.In(SI);
+	if (judge(test.Query(I)) == YO)
+		printf("正解5");
+
+	//しよ->い
+	test.In(SI);
+	if (judge(test.Query(YO)) == I)
+		printf("正解6");
+
+	//し->よ
 	test.In(None);
-	test.Query(YO).View();
+	if (judge(test.Query(SI)) == YO)
+		printf("正解7");
+
+	//よ->し
+	test.In(None);
+	if (judge(test.Query(YO)) == SI)
+		printf("正解8");
 }
 
 //MNISTデータ学習
@@ -102,7 +143,7 @@ void NN_test() {
 
 
 	ifs.open("mnist_train.csv");
-	while (buf != '\n' || locate <= 10000) {
+	while (buf != '\n' || locate <= 60000) {
 		ifs.read((char*)&buf, sizeof(unsigned char));
 
 		if (buf == ',' or buf == '\n') {
@@ -131,7 +172,7 @@ void NN_test() {
 			Machine.Learn(image, Ideal);
 			
 			system("cls");
-			printf("%.1lf%%\n", ((double)(locate-1) / 10000) * 100);
+			printf("%.3lf%%\n", ((double)(locate-1) / 60000) * 100);
 		}
 	}
 	ifs.close();
@@ -143,7 +184,7 @@ void NN_test() {
 	system("pause");
 
 	double Accuracy = 0;
-	while (buf != '\n' || locate <= 1000) {
+	while (buf != '\n' || locate <= 10000) {
 		ifs.read((char*)&buf, sizeof(unsigned char));
 
 		if (buf == ',' or buf == '\n') {
@@ -189,11 +230,11 @@ void NN_test() {
 			}
 		}
 	}
-	printf("正答率は%lf%%です。\n",Accuracy/10);
+	printf("正答率は%lf%%です。\n",Accuracy/100);
 }
 
 
 int main() {
-	//NN_test();
+	NN_test();
 	RNN_test();
 }
