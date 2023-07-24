@@ -1,7 +1,7 @@
 /*=============================================================
 * NAME      : NeuralNetwork.hpp
 * AUTHOR    : SanaeProject
-* VER       : 2.0.0
+* VER       : 2.1.0
 * COPYRIGHGT: Copyright 2023 SanaeProject.
 =============================================================*/
 
@@ -17,10 +17,14 @@
 #include "Matrix.h"
 
 
-
+//正常にインクルードしていること。 C++14以上
 #if defined(_SANAE_MATRIXBASE_HPP_ALL_INCLUDE_)
 
+
 namespace Sanae {
+
+
+	//Neural Network
 	class NN {
 	public:
 		double Learn_rate = 0.5;
@@ -36,6 +40,8 @@ namespace Sanae {
 			for (Ulong i = 0; i < _In.GetSize(); i++)
 				_In[i] = 1 / (1 + std::exp(-1 * _In[i]));
 		}
+
+		//Weights(重み)を修正します。
 		void Modifled
 		(
 			Matrix& Input,
@@ -54,7 +60,9 @@ namespace Sanae {
 			return;
 		}
 
+
 	public:
+		//コンストラクタ
 		NN
 		(
 			Ulong _Input_Nodes,
@@ -79,6 +87,7 @@ namespace Sanae {
 				O_Weights[i] = (double)(rand() % 100) / 100 - 0.5;
 		}
 
+		//照会します。
 		virtual Matrix Query
 		(
 			Matrix& _Input
@@ -93,6 +102,7 @@ namespace Sanae {
 			return Output_HO;
 		}
 
+		//学習させます。
 		virtual void Learn
 		(
 			Matrix& _Input,
@@ -117,29 +127,31 @@ namespace Sanae {
 	};
 
 
-	class RNN : public NN{
+	class RNN : public NN {
 	public:
 
 		Matrix P_Weights;
 		Matrix P_Data;
 
-	
+
 	public:
+	public:
+		//コンストラクタ
 		RNN
 		(
 			Ulong _Input_Nodes,
 			Ulong _Hidden_Nodes,
 			Ulong _Output_Nodes,
 			unsigned int _Seed
-		) 
+		)
 			:
-		NN
-		(
+			NN
+			(
 				_Input_Nodes,
 				_Hidden_Nodes,
 				_Output_Nodes,
 				_Seed
-		)
+			)
 		{
 			//シード値設定
 			srand(_Seed);
@@ -148,8 +160,8 @@ namespace Sanae {
 			I_Weights.SetSize({ _Input_Nodes,_Hidden_Nodes });
 			O_Weights.SetSize({ _Hidden_Nodes,_Output_Nodes });
 
-			P_Weights.SetSize({_Hidden_Nodes ,1             });
-			P_Data   .SetSize({1             ,_Hidden_Nodes });
+			P_Weights.SetSize({ _Hidden_Nodes ,1 });
+			P_Data.SetSize({ 1             ,_Hidden_Nodes });
 
 			//入力層の重み
 			for (Ulong i = 0; i < I_Weights.GetSize(); i++)
@@ -162,21 +174,27 @@ namespace Sanae {
 			for (Ulong i = 0; i < P_Weights.GetSize(); i++)
 				P_Weights[i] = (double)(rand() % 100) / 100 - 0.5;
 
-			for (Ulong i = 0; i < P_Data.GetSize();i++)
+			//重み
+			for (Ulong i = 0; i < P_Weights.GetSize(); i++)
+				P_Weights[i] = (double)(rand() % 100) / 100 - 0.5;
+
+			//初期値を0とする。
+			for (Ulong i = 0; i < P_Data.GetSize(); i++)
 				P_Data[i] = 0;
 		}
 
+		//照会します。
 		Matrix Query
 		(
 			Matrix& _Input
 		) override
 		{
 			Matrix Output_IH = I_Weights * _Input;
-			for (Ulong i = 0; i < P_Data.GetSize();i++)
+			for (Ulong i = 0; i < P_Data.GetSize(); i++)
 				Output_IH[i] += P_Weights[i] * P_Data[i];
-			
+
 			this->Activation(Output_IH);
-			P_Data           = Output_IH;
+			P_Data = Output_IH;
 
 			Matrix Output_HO = O_Weights * Output_IH;
 			this->Activation(Output_HO);
@@ -197,6 +215,7 @@ namespace Sanae {
 			P_Data = Output_IH;
 		}
 
+		//学習させます。
 		void Learn
 		(
 			Matrix& _Input,
@@ -208,7 +227,7 @@ namespace Sanae {
 				Output_IH[i] += P_Weights[i] * P_Data[i];
 
 			this->Activation(Output_IH);
-			
+
 			Matrix Output_HO = O_Weights * Output_IH;
 			this->Activation(Output_HO);
 
@@ -218,10 +237,10 @@ namespace Sanae {
 			Modifled(_Input, Output_IH, I_Weights, Hidden_Error);
 			Modifled(Output_IH, Output_HO, O_Weights, Output_Error);
 
-			for (Ulong i = 0; i < P_Weights.GetSize();i++) {
+			for (Ulong i = 0; i < P_Weights.GetSize(); i++) {
 				double P_Error = P_Weights[i] * Hidden_Error[i];
-				double Out     = P_Weights[i] * P_Data[i];
-				P_Weights[i]  += P_Error * Out * (1 - Out) * P_Data[i];
+				double Out = P_Weights[i] * P_Data[i];
+				P_Weights[i] += P_Error * Out * (1 - Out) * P_Data[i];
 			}
 
 			P_Data = Output_IH;
@@ -230,6 +249,7 @@ namespace Sanae {
 		}
 	};
 }
+
 
 #endif
 
