@@ -194,6 +194,6 @@ void NN_test() {
 
 
 int main() {
-	NN_test();
+	//NN_test();
 	RNN_test();
 }

@@ -144,14 +144,14 @@ namespace Sanae {
 			Ulong _Output_Nodes,
 			unsigned int _Seed
 		)
-			:
-			NN
-			(
-				_Input_Nodes,
-				_Hidden_Nodes,
-				_Output_Nodes,
-				_Seed
-			)
+		:
+		NN
+		(
+			_Input_Nodes,
+			_Hidden_Nodes,
+			_Output_Nodes,
+			_Seed
+		)
 		{
 			//シード値設定
 			srand(_Seed);
