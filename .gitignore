@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/NeuralNetworkProject/mnist_test.csv
+/NeuralNetworkProject/mnist_train.csv
