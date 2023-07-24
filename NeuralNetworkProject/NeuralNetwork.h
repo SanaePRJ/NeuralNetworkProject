@@ -29,7 +29,7 @@ namespace Sanae {
 		Matrix O_Weights;	//出力層の重み
 
 
-	private:
+	protected:
 		//シグモイド関数を活性化関数とする。
 		void Activation(Matrix& _In)
 		{
@@ -79,7 +79,7 @@ namespace Sanae {
 				O_Weights[i] = (double)(rand() % 100) / 100 - 0.5;
 		}
 
-		Matrix Query
+		virtual Matrix Query
 		(
 			Matrix& _Input
 		)
@@ -93,7 +93,7 @@ namespace Sanae {
 			return Output_HO;
 		}
 
-		void Learn
+		virtual void Learn
 		(
 			Matrix& _Input,
 			Matrix& _Ideal
@@ -111,6 +111,120 @@ namespace Sanae {
 
 			Modifled(_Input, Output_IH, I_Weights, Hidden_Error);
 			Modifled(Output_IH, Output_HO, O_Weights, Output_Error);
+
+			return;
+		}
+	};
+
+
+	class RNN : public NN{
+	public:
+
+		Matrix P_Weights;
+		Matrix P_Data;
+
+	
+	public:
+		RNN
+		(
+			Ulong _Input_Nodes,
+			Ulong _Hidden_Nodes,
+			Ulong _Output_Nodes,
+			unsigned int _Seed
+		) 
+			:
+		NN
+		(
+				_Input_Nodes,
+				_Hidden_Nodes,
+				_Output_Nodes,
+				_Seed
+		)
+		{
+			//シード値設定
+			srand(_Seed);
+
+			//各層の重みを設定
+			I_Weights.SetSize({ _Input_Nodes,_Hidden_Nodes });
+			O_Weights.SetSize({ _Hidden_Nodes,_Output_Nodes });
+
+			P_Weights.SetSize({_Hidden_Nodes ,1             });
+			P_Data   .SetSize({1             ,_Hidden_Nodes });
+
+			//入力層の重み
+			for (Ulong i = 0; i < I_Weights.GetSize(); i++)
+				I_Weights[i] = (double)(rand() % 100) / 100 - 0.5;
+
+			//出力層の重み
+			for (Ulong i = 0; i < O_Weights.GetSize(); i++)
+				O_Weights[i] = (double)(rand() % 100) / 100 - 0.5;
+
+			for (Ulong i = 0; i < P_Weights.GetSize(); i++)
+				P_Weights[i] = (double)(rand() % 100) / 100 - 0.5;
+
+			for (Ulong i = 0; i < P_Data.GetSize();i++)
+				P_Data[i] = 0;
+		}
+
+		Matrix Query
+		(
+			Matrix& _Input
+		) override
+		{
+			Matrix Output_IH = I_Weights * _Input;
+			for (Ulong i = 0; i < P_Data.GetSize();i++)
+				Output_IH[i] += P_Weights[i] * P_Data[i];
+			
+			this->Activation(Output_IH);
+			P_Data           = Output_IH;
+
+			Matrix Output_HO = O_Weights * Output_IH;
+			this->Activation(Output_HO);
+
+			return Output_HO;
+		}
+
+		void In
+		(
+			Matrix& _Input
+		)
+		{
+			Matrix Output_IH = I_Weights * _Input;
+			for (Ulong i = 0; i < P_Data.GetSize(); i++)
+				Output_IH[i] += P_Weights[i] * P_Data[i];
+
+			this->Activation(Output_IH);
+			P_Data = Output_IH;
+		}
+
+		void Learn
+		(
+			Matrix& _Input,
+			Matrix& _Ideal
+		) override
+		{
+			Matrix Output_IH = I_Weights * _Input;
+			for (Ulong i = 0; i < P_Data.GetSize(); i++)
+				Output_IH[i] += P_Weights[i] * P_Data[i];
+
+			this->Activation(Output_IH);
+			
+			Matrix Output_HO = O_Weights * Output_IH;
+			this->Activation(Output_HO);
+
+			Matrix Output_Error = _Ideal - this->Query(_Input);
+			Matrix Hidden_Error = O_Weights.Transpose() * Output_Error;
+
+			Modifled(_Input, Output_IH, I_Weights, Hidden_Error);
+			Modifled(Output_IH, Output_HO, O_Weights, Output_Error);
+
+			for (Ulong i = 0; i < P_Weights.GetSize();i++) {
+				double P_Error = P_Weights[i] * Hidden_Error[i];
+				double Out     = P_Weights[i] * P_Data[i];
+				P_Weights[i]  += P_Error * Out * (1 - Out) * P_Data[i];
+			}
+
+			P_Data = Output_IH;
 
 			return;
 		}
