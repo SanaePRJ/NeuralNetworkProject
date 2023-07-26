@@ -125,8 +125,11 @@ void RNN_test() {
 
 //MNISTデータ学習
 void NN_test() {
-	NN Machine = {784,392,10,(unsigned int)time(0UL)};
-	Machine.Learn_rate = 0.01;
+	NN Machine = {784,256,10,(unsigned int)time(0UL)};
+	Machine.Activation_Func = tanh;
+	Machine.Activation_Diff = diff_tanh;
+
+	Machine.Learn_rate = 0.4;
 
 	unsigned char buf  = 0;
 	std::string   read = "";
@@ -143,7 +146,7 @@ void NN_test() {
 
 
 	ifs.open("mnist_train.csv");
-	while (buf != '\n' || locate <= 60000) {
+	while (buf != '\n' || locate <= 500) {
 		ifs.read((char*)&buf, sizeof(unsigned char));
 
 		if (buf == ',' or buf == '\n') {
@@ -171,8 +174,9 @@ void NN_test() {
 
 			Machine.Learn(image, Ideal);
 			
-			system("cls");
-			printf("%.3lf%%\n", ((double)(locate-1) / 60000) * 100);
+			if ((locate-1)%10==0) {
+				printf("%.3lf%%\n", ((double)(locate - 1) / 500) * 100);
+			}
 		}
 	}
 	ifs.close();
@@ -184,7 +188,7 @@ void NN_test() {
 	system("pause");
 
 	double Accuracy = 0;
-	while (buf != '\n' || locate <= 10000) {
+	while (buf != '\n' || locate <= 10) {
 		ifs.read((char*)&buf, sizeof(unsigned char));
 
 		if (buf == ',' or buf == '\n') {
@@ -198,7 +202,7 @@ void NN_test() {
 				image[point] = (double)atoi(read.c_str()) / 255 * 0.99 + 0.01;
 			}
 
-			read = "";
+			read   = "";
 			point += 1;
 		}
 		else
@@ -211,7 +215,9 @@ void NN_test() {
 			point   = -1;
 
 			Matrix a = Machine.Query(image);
-
+			a.View();
+			system("pause");
+			
 			//最大値を解とする。
 			std::pair<double, Ulong> max = { 0,0 };
 			for (Ulong i = 0; i < a.GetSize();i++) {
@@ -230,11 +236,12 @@ void NN_test() {
 			}
 		}
 	}
-	printf("正答率は%lf%%です。\n",Accuracy/100);
+	printf("正答率は%lf%%です。\n",Accuracy*10);
+	system("pause");
 }
 
 
 int main() {
 	NN_test();
-	RNN_test();
+	//RNN_test();
 }
