@@ -105,7 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <Optimization>Disabled</Optimization>
+      <Optimization>Full</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -141,7 +141,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <Optimization>Disabled</Optimization>
+      <Optimization>Full</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -165,6 +165,9 @@
     <ClInclude Include="Matrix\MatrixDet.hpp" />
     <ClInclude Include="Matrix\MatrixImpl.hpp" />
     <ClInclude Include="NeuralNetwork.h" />
+    <ClInclude Include="NeuralNetwork.hpp" />
+    <ClInclude Include="NeuralNetworkLayers.hpp" />
+    <ClInclude Include="ReadCSV.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mnist_test.csv" />

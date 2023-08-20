@@ -7,7 +7,7 @@
 
 
 #ifndef _SANAE_NEURALNETWORK_H_
-#define _SANAE_NEURALNETWORK_H_
+#define _SANAE_NEURALNETWORK
 
 
 /*INCLUDE*/
@@ -36,8 +36,16 @@ namespace Sanae {
 	}
 
 /*======導関数======*/
+	//数値微分
+	double (*Num_Diff_Func)(double) = ReLU;
+	inline double Num_Diff(double _In) 
+	{
+		return (Num_Diff_Func(_In + 1e-4) - Num_Diff_Func(_In - 1e-4)) / (2 * 1e-4);
+	}
+
+
 	//シグモイド関数の導関数
-	inline double diff_Sigmoid(double _In) 
+	inline double diff_Sigmoid(double _In)
 	{
 		return Sanae::Sigmoid(_In) * (1 - Sanae::Sigmoid(_In));
 	}
@@ -49,7 +57,7 @@ namespace Sanae {
 	//tanhの導関数
 	inline double diff_tanh(double _In)
 	{
-		return 1/std::pow(std::cosh(_In), 2);
+		return 4/std::pow(std::exp(_In)+std::exp(-1*_In), 2);
 	}
 
 
@@ -59,7 +67,7 @@ namespace Sanae {
 		double (*Activation_Func)(double) = Sanae::Sigmoid;       //活性化関数
 		double (*Activation_Diff)(double) = Sanae::diff_Sigmoid;  //導関数
 
-		double Learn_rate = 1; 
+		double Learn_rate = 1;
 
 		Matrix I_Weights;	//入力層の重み
 		Matrix O_Weights;	//出力層の重み
@@ -87,7 +95,7 @@ namespace Sanae {
 			for (Ulong i = 0; i < Error.GetSizeWH().second; i++)
 				buf[i] = Error[i] * Activation_Diff(Output[i]);
 
-			Weights   += (buf *= Input.Transpose()) *= this->Learn_rate;
+			Weights += (buf *= Input.Transpose()) *= this->Learn_rate;
 
 			return;
 		}
@@ -176,14 +184,14 @@ namespace Sanae {
 			Ulong _Output_Nodes,
 			unsigned int _Seed
 		)
-		:
-		NN
-		(
-			_Input_Nodes,
-			_Hidden_Nodes,
-			_Output_Nodes,
-			_Seed
-		)
+			:
+			NN
+			(
+				_Input_Nodes,
+				_Hidden_Nodes,
+				_Output_Nodes,
+				_Seed
+			)
 		{
 			//シード値設定
 			srand(_Seed);
@@ -274,8 +282,8 @@ namespace Sanae {
 			//再帰の重みの修正
 			for (Ulong i = 0; i < P_Weights.GetSize(); i++) {
 				double P_Error = P_Weights[i] * Hidden_Error[i];
-				double Out     = P_Weights[i] * P_Data[i];
-				P_Weights[i]   += Learn_rate*P_Error * Out * (1 - Out) * P_Data[i];
+				double Out = P_Weights[i] * P_Data[i];
+				P_Weights[i] += Learn_rate * P_Error * Out * (1 - Out) * P_Data[i];
 			}
 
 			//以前の出力を保存
@@ -283,16 +291,18 @@ namespace Sanae {
 
 			return;
 		}
+
+
 	};
 
 
 	//Deep Neural Network
-	class DNN{
+	class DNN {
 	protected:
 		const Ulong IO_Layer = 2;
 
 		Ulong Input_Layer = 0;
-		Ulong Output_Layer= 0;
+		Ulong Output_Layer = 0;
 
 
 	public:
@@ -356,21 +366,21 @@ namespace Sanae {
 			const Ulong Sum_Layer = IO_Layer + _Middle_Layer;
 
 			//サイズ設定
-			Weights.resize(Sum_Layer-1);
+			Weights.resize(Sum_Layer - 1);
 			Output_Layer = Weights.size() - 1;
 
 			//入力層の重みを設定
-			Weights[Input_Layer].SetSize({_Input_Node,_Hidden_Node });
+			Weights[Input_Layer].SetSize({ _Input_Node,_Hidden_Node });
 			Init_Weight(&Weights[Input_Layer]);
 
 			//出力層の重みを設定
-			Weights[Output_Layer].SetSize({_Hidden_Node,_Output_Node});
+			Weights[Output_Layer].SetSize({ _Hidden_Node,_Output_Node });
 			Init_Weight(&Weights[Output_Layer]);
 
 			//中間層の重みを設定
-			for (Ulong Layer = 1; Layer < (Sum_Layer - IO_Layer);Layer++) 
+			for (Ulong Layer = 1; Layer < (Sum_Layer - IO_Layer); Layer++)
 			{
-				Weights[Layer].SetSize({_Hidden_Node,_Hidden_Node});
+				Weights[Layer].SetSize({ _Hidden_Node,_Hidden_Node });
 				Init_Weight(&Weights[Layer]);
 			}
 		}
@@ -384,7 +394,7 @@ namespace Sanae {
 			Matrix Output = Weights[Input_Layer] * _Input;
 			this->Activation(Output);
 
-			for (Ulong i = 1; i <= Output_Layer;i++) {
+			for (Ulong i = 1; i <= Output_Layer; i++) {
 				Output = Weights[i] * Output;
 				this->Activation(Output);
 			}
@@ -408,22 +418,23 @@ namespace Sanae {
 			//それぞれの出力を保存する。
 			_Outputs[0] = (Weights[Input_Layer] * _Input);
 			this->Activation(_Outputs[0]);
-			
+
 			for (Ulong i = 1; i <= Output_Layer; i++) {
-				_Outputs[i] = (Weights[i] * _Outputs[i-1]);
+				_Outputs[i] = (Weights[i] * _Outputs[i - 1]);
 				this->Activation(_Outputs[i]);
 			}
 
 			//誤差逆伝番
 			_Errors[_Errors.size() - 1] = _Ideal - _Outputs[Output_Layer];
-			
+
 			for (Ulong i = _Errors.size() - 2; i > 0; i--)
 				_Errors[i] = Weights[i + 1].Transpose() * _Errors[i + 1];
 			_Errors[0] = Weights[1].Transpose() * _Errors[1];
-			
+
 			this->Modifled(_Input, _Outputs[0], Weights[0], _Errors[0]);
-			for (Ulong i = 1; i < _Outputs.size();i++) 
-				this->Modifled(_Outputs[i-1], _Outputs[i], Weights[i], _Errors[i]);
+
+			for (Ulong i = 1; i < _Outputs.size(); i++)
+				this->Modifled(_Outputs[i - 1], _Outputs[i], Weights[i], _Errors[i]);
 		}
 	};
 }

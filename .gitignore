@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /NeuralNetworkProject/mnist_test.csv
 /NeuralNetworkProject/mnist_train.csv
+/Test
