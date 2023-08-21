@@ -167,6 +167,7 @@
     <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="NeuralNetwork.hpp" />
     <ClInclude Include="NeuralNetworkLayers.hpp" />
+    <ClInclude Include="Plot.hpp" />
     <ClInclude Include="ReadCSV.hpp" />
   </ItemGroup>
   <ItemGroup>

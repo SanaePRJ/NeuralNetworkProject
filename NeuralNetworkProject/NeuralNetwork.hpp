@@ -36,16 +36,16 @@ namespace Sanae {
 		return;
 	}
 
+
 	class NN 
 	{
 	private:
-		Layer_Base* Layers[6];
+		std::vector<Layer_Base*> Layers;
 
 		double LearnRate;
-		int    LayerCount = 6;
+		
 
 	public:
-		
 		NN(Ulong _Input_Nodes,Ulong _Hidden_Nodes,Ulong _Output_Nodes,double _Learn_rate,unsigned int _Seed) 
 		{
 			srand(_Seed);
@@ -56,24 +56,26 @@ namespace Sanae {
 			static Layer_Affine Affine2 = {_Hidden_Nodes,_Hidden_Nodes,_Seed};
 			static Layer_Affine Affine3 = {_Hidden_Nodes,_Output_Nodes,_Seed};
 			
-			static Layer_Sigmoid Sigmoid = {};
+			static Layer_Sigmoid Sigmoid1 = {};
 			static Layer_Sigmoid Sigmoid2 = {};
 
-			static Layer_SoftMax SoftMax = {};
+			static Layer_SoftMax SoftMax  = {};
 			
-			Layers[0] = &Affine1;
-			Layers[1] = &Sigmoid;
-			Layers[2] = &Affine2;
-			Layers[3] = &Sigmoid2;
-			Layers[4] = &Affine3;
-			Layers[5] = &SoftMax;
+			Layers.push_back(&Affine1);
+			Layers.push_back(&Sigmoid1);
+
+			Layers.push_back(&Affine2);
+			Layers.push_back(&Sigmoid2);
+
+			Layers.push_back(&Affine3);
+			Layers.push_back(&SoftMax);
 		}
 
 		Matrix Predict(Matrix _Data) 
 		{
 			Matrix buf = Layers[0]->forward(&_Data);
 			
-			for (Ulong i = 1; i < LayerCount; i++)
+			for (Ulong i = 1; i < Layers.size(); i++)
 				buf = Layers[i]->forward(&buf);
 			
 			return buf;
@@ -82,11 +84,11 @@ namespace Sanae {
 		void Learn(Matrix _In, Matrix _t) {
 			Matrix buf = Layers[0]->forward(&_In);
 
-			for (Ulong i = 1; i < LayerCount; i++)
+			for (Ulong i = 1; i < Layers.size(); i++)
 				buf = Layers[i]->forward(&buf);
 
-			buf = Layers[LayerCount-1]->backward(&_t);
-			for (int i = LayerCount - 2; i >= 0; i--) {
+			buf = Layers[Layers.size() -1]->backward(&_t);
+			for (int i = Layers.size() - 2; i >= 0; i--) {
 				buf = Layers[i]->backward(&buf);
 
 				if (Layers[i]->Is_Affine)
@@ -94,6 +96,7 @@ namespace Sanae {
 			}
 		}
 	};
+
 
 }
 

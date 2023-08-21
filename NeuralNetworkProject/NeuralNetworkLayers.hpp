@@ -126,7 +126,7 @@ namespace Sanae {
 	) 
 	{
 		Random::Default_Random rand(1,-1,_Seed,_DoSrand);
-
+		
 		for (Ulong i = 0; i < _Pointer->GetSize(); i++)
 			(*_Pointer)[i] = rand.Get();
 

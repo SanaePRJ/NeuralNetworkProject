@@ -136,7 +136,7 @@ namespace Sanae{
 		bool                 _Clear
 	) 
 	{
-		if (_Size1 == _Size2)
+		if (_Size1 != _Size2)
 			throw std::invalid_argument("Must be same size.");
 
 		Ulong Size = _Size1->first * _Size1->second;
