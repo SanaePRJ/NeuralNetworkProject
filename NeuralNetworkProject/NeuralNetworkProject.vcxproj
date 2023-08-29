@@ -164,7 +164,6 @@
     <ClInclude Include="Matrix\MatrixBase\MatrixBaseImpl.hpp" />
     <ClInclude Include="Matrix\MatrixDet.hpp" />
     <ClInclude Include="Matrix\MatrixImpl.hpp" />
-    <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="NeuralNetwork.hpp" />
     <ClInclude Include="NeuralNetworkLayers.hpp" />
     <ClInclude Include="Plot.hpp" />

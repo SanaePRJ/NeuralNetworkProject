@@ -207,6 +207,12 @@ namespace Sanae {
 
 		//_Mainのポインタを返します。(std::max_elementなどの関数で使用する用)
 		const std::vector<double>* GetVectorP();
+
+		//同じ大きさで変形します。
+		Matrix& Deformation
+		(
+			SizeT
+		);
 	};
 }
 

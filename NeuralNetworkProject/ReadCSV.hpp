@@ -21,7 +21,7 @@
 namespace Sanae {
 
 
-	template<typename _ReadType> class ReadCSV {
+	class ReadCSV {
 	private:
 		std::ifstream Ifs;
 		bool          Is_NewLine = false;
@@ -36,7 +36,7 @@ namespace Sanae {
 			if (!Ifs.is_open())
 				throw std::runtime_error("Must be open.");
 
-			for (unsigned char i = 0; i < sizeof(_ReadType); i++) {
+			while (true) {
 				unsigned char buffer = 0;
 				this->Ifs.read((char*)&buffer, sizeof(unsigned char));
 
@@ -100,33 +100,37 @@ namespace Sanae {
 		}
 
 		//®”Œ^‚ğ“Ç‚İæ‚é
-		_ReadType ReadDataI
+		template<typename _ReadType> _ReadType ReadDataI
 		(
 			_ReadType (*_Conv)(const std::string&,std::size_t*,int) = std::stoi
 		)
 		{
 			std::string _data;
-			_data.reserve(sizeof(_ReadType));
-
 			this->Read(&_data);
 
 			return _Conv(_data,nullptr,10);
 		}
 		//À”Œ^‚ğ“Ç‚İæ‚é
-		_ReadType ReadDataD
+		template<typename _ReadType> _ReadType ReadDataD
 		(
 			_ReadType(*_Conv)(const std::string&, std::size_t*) = std::stod
 		)
 		{
 			std::string _data;
-			_data.reserve(sizeof(_ReadType));
-
 			this->Read(&_data);
 			
-			return _Conv(_data, nullptr);
+			return _Conv(_data.c_str(), nullptr);
+		}
+		//•¶š—ñ‚ğ“Ç‚İæ‚é
+		template<typename _ReadType> _ReadType ReadDataStr()
+		{
+			std::string _data;
+			this->Read(&_data);
+			
+			return _data;
 		}
 
-		void ReadLineI
+		template<typename _ReadType> void ReadLineI
 		(
 			std::vector<_ReadType>* _Store,
 			Ulong                   _Surplus = 10,
@@ -134,16 +138,18 @@ namespace Sanae {
 			_ReadType(*_Conv)(const std::string&, std::size_t*, int) = std::stoi
 		)
 		{
+			this->Is_NewLine = false;
 			while (!this->Is_NewLine) {
 				if (_Store->size() + 1 >= _Store->capacity())
 					_Store->reserve(_Surplus);
 
 				_Store->push_back(this->ReadDataI(_Conv));
 			}	
+			this->Is_NewLine = false;
 
 			return;
 		}
-		void ReadLineD
+		template<typename _ReadType> void ReadLineD
 		(
 			std::vector<_ReadType>* _Store,
 			Ulong                   _Surplus = 10,
@@ -151,12 +157,31 @@ namespace Sanae {
 			_ReadType(*_Conv)(const std::string&, std::size_t*) = std::stod
 		)
 		{
+			this->Is_NewLine = false;
 			while (!this->Is_NewLine) {
 				if (_Store->size() + 1 >= _Store->capacity())
 					_Store->reserve(_Surplus);
 
 				_Store->push_back(this->ReadDataD(_Conv));
 			}
+			this->Is_NewLine = false;
+			
+			return;
+		}
+		template<typename _ReadType> void ReadLineStr
+		(
+			std::vector<_ReadType>* _Store,
+			Ulong                   _Surplus = 10
+		)
+		{
+			this->Is_NewLine = false;
+			while (!this->Is_NewLine) {
+				if (_Store->size() + 1 >= _Store->capacity())
+					_Store->reserve(_Surplus);
+
+				_Store->push_back(this->ReadDataStr());
+			}
+			this->Is_NewLine = false;
 
 			return;
 		}

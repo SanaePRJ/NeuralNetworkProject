@@ -136,7 +136,7 @@ namespace Sanae{
 		bool                 _Clear
 	) 
 	{
-		if (_Size1 != _Size2)
+		if (_Size1 == _Size2)
 			throw std::invalid_argument("Must be same size.");
 
 		Ulong Size = _Size1->first * _Size1->second;
@@ -418,6 +418,20 @@ namespace Sanae{
 	const std::vector<double>* Matrix::GetVectorP() 
 	{
 		return &this->_Main;
+	}
+
+	//行列の形を変更する。
+	Matrix& Matrix::Deformation
+	(
+		SizeT _To
+	) 
+	{
+		if (this->GetSize() != (_To.first * _To.second))
+			throw std::invalid_argument("Array count must not change.");
+		else
+			this->_Size = _To;
+
+		return *this;
 	}
 }
 
