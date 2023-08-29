@@ -1,7 +1,7 @@
 /*=============================================================
 * NAME      : ReadCSV.hpp
 * AUTHOR    : SanaeProject
-* VER       : 1.0.0
+* VER       : 1.0.1
 * COPYRIGHGT: Copyright 2023 SanaeProject.
 =============================================================*/
 
@@ -130,6 +130,7 @@ namespace Sanae {
 			return _data;
 		}
 
+		//intå^Ç≈àÍçsì«Ç›éÊÇËÇ‹Ç∑ÅB
 		template<typename _ReadType> void ReadLineI
 		(
 			std::vector<_ReadType>* _Store,
@@ -149,7 +150,7 @@ namespace Sanae {
 
 			return;
 		}
-		template<typename _ReadType> void ReadLineD
+		void ReadLineD
 		(
 			std::vector<_ReadType>* _Store,
 			Ulong                   _Surplus = 10,
@@ -164,24 +165,6 @@ namespace Sanae {
 
 				_Store->push_back(this->ReadDataD(_Conv));
 			}
-			this->Is_NewLine = false;
-			
-			return;
-		}
-		template<typename _ReadType> void ReadLineStr
-		(
-			std::vector<_ReadType>* _Store,
-			Ulong                   _Surplus = 10
-		)
-		{
-			this->Is_NewLine = false;
-			while (!this->Is_NewLine) {
-				if (_Store->size() + 1 >= _Store->capacity())
-					_Store->reserve(_Surplus);
-
-				_Store->push_back(this->ReadDataStr());
-			}
-			this->Is_NewLine = false;
 
 			return;
 		}

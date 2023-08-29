@@ -14,7 +14,7 @@
 
 using namespace Sanae;
 
-Ulong LearnCount = 6000; //学習回数
+Ulong LearnCount = 6000;  //学習回数
 Ulong testCount  = 10000; //テスト回数
 
 void   NN_Learn(NN* Machine);

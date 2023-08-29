@@ -1,7 +1,7 @@
 /*=============================================================
 * NAME      : NeuralNetworkLayers.hpp
 * AUTHOR    : SanaeProject
-* VER       : 1.0.0
+* VER       : 1.0.1
 * COPYRIGHGT: Copyright 2023 SanaeProject.
 =============================================================*/
 
