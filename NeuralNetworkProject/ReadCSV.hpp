@@ -99,7 +99,7 @@ namespace Sanae {
 			return *this;
 		}
 
-		//®”Œ^‚ğ“Ç‚İæ‚é
+		//æ•´æ•°å‹ã‚’èª­ã¿å–ã‚‹
 		template<typename _ReadType> _ReadType ReadDataI
 		(
 			_ReadType (*_Conv)(const std::string&,std::size_t*,int) = std::stoi
@@ -110,7 +110,7 @@ namespace Sanae {
 
 			return _Conv(_data,nullptr,10);
 		}
-		//À”Œ^‚ğ“Ç‚İæ‚é
+		//å®Ÿæ•°å‹ã‚’èª­ã¿å–ã‚‹
 		template<typename _ReadType> _ReadType ReadDataD
 		(
 			_ReadType(*_Conv)(const std::string&, std::size_t*) = std::stod
@@ -121,7 +121,7 @@ namespace Sanae {
 			
 			return _Conv(_data.c_str(), nullptr);
 		}
-		//•¶š—ñ‚ğ“Ç‚İæ‚é
+		//æ–‡å­—åˆ—ã‚’èª­ã¿å–ã‚‹
 		template<typename _ReadType> _ReadType ReadDataStr()
 		{
 			std::string _data;
@@ -130,7 +130,7 @@ namespace Sanae {
 			return _data;
 		}
 
-		//intŒ^‚Åˆês“Ç‚İæ‚è‚Ü‚·B
+		//intå‹ã§ä¸€è¡Œèª­ã¿å–ã‚Šã¾ã™ã€‚
 		template<typename _ReadType> void ReadLineI
 		(
 			std::vector<_ReadType>* _Store,
@@ -150,7 +150,7 @@ namespace Sanae {
 
 			return;
 		}
-		void ReadLineD
+		template<typename _ReadType> void ReadLineD
 		(
 			std::vector<_ReadType>* _Store,
 			Ulong                   _Surplus = 10,
