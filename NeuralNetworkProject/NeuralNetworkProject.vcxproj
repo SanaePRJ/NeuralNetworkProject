@@ -166,10 +166,12 @@
     <ClInclude Include="Matrix\MatrixImpl.hpp" />
     <ClInclude Include="NeuralNetwork.hpp" />
     <ClInclude Include="NeuralNetworkLayers.hpp" />
+    <ClInclude Include="NeuralNetworkDoc.hpp" />
     <ClInclude Include="Plot.hpp" />
-    <ClInclude Include="ReadCSV.hpp" />
+    <ClInclude Include="CSV.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\README.md" />
     <None Include="mnist_test.csv" />
     <None Include="mnist_test_10.csv" />
     <None Include="mnist_train.csv" />

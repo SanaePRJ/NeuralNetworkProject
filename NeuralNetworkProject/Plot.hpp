@@ -1,7 +1,7 @@
 /*=============================================================
 * NAME      : Plot.hpp
 * AUTHOR    : SanaeProject
-* VER       : 1.0.0
+* VER       : 2.0.0
 * COPYRIGHGT: Copyright 2023 SanaeProject.
 =============================================================*/
 
@@ -34,20 +34,16 @@ namespace Sanae {
 		Color Letter, BackGround;
 	};
 	const Color_Console Default_Color = { Color{255,255,255},Color{0,0,0} };
+	
 
-
-	class Plot {
-	private:
-		//Plotするサイズ
-		size_t Weight;
-
-
+	//Consoleの色を変更します。
+	class _CONSOLE_ {
 	private:
 		void Set_Color
 		(
 			Color _Letter_Color,
 			Color _Background_Color
-		) 
+		)
 		{
 			std::string buf;
 
@@ -70,9 +66,51 @@ namespace Sanae {
 			std::cout << "\x1b[m";
 		}
 
+	public:
+		_CONSOLE_()
+		{
+		//エスケープシーケンス
+		#if __has_include("windows.h")
+			HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+			DWORD  mode = 0;
+
+			GetConsoleMode(stdHandle, &mode);
+			SetConsoleMode(stdHandle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+		#endif
+		}
+
+		//Consoleの色を設定
+		_CONSOLE_& operator << (const Color_Console _Console_Color)
+		{
+			this->Set_Color(_Console_Color.Letter, _Console_Color.BackGround);
+
+			return *this;
+		}
+
+		_CONSOLE_& SetColor(const Color_Console _Console_Color) 
+		{
+			this->Set_Color(_Console_Color.Letter, _Console_Color.BackGround);
+
+			return *this;
+		}
+		_CONSOLE_& Reset()
+		{
+			this->Reset_Color();
+
+			return *this;
+		}
+	};
+	_CONSOLE_ Console;
+
+
+	//MNISTデータセットの文字を出力するための型
+	class _PLOT_ {
+	private:
+		//Plotするサイズ
+		size_t Weight;
 
 	public:
-		Plot
+		_PLOT_
 		(
 			size_t _Weight
 		)
@@ -88,24 +126,20 @@ namespace Sanae {
 		#endif
 		}
 		
-		//Consoleの色を設定
-		Plot& operator << (Color_Console _Console_Color) {
-			this->Set_Color(_Console_Color.Letter,_Console_Color.BackGround);
-		}
-
 		//表示
-		template<typename Type> Plot& operator << (const std::vector<Type>& _View_Data) {
+		template<typename Type> _PLOT_& operator << (const std::vector<Type>& _View_Data)
+		{
 			size_t _point = 0;
 
 			for (Type View : _View_Data) {
 				//背景を変更
-				this->Set_Color(Color{ 0,0,0 }, {(unsigned char)(std::abs(View)),(unsigned char)(std::abs(View)),(unsigned char)(std::abs(View))});
+				Console << Color_Console{Color{ 0, 0, 0 }, { (unsigned char)(std::abs(View)),(unsigned char)(std::abs(View)),(unsigned char)(std::abs(View)) }};
 				
 				//空白を出力
-				std::cout << ' ';
+				std::cout << "　";
 
 				//背景色をリセット
-				this->Reset_Color();
+				Console.Reset_Color();
 				_point++;
 
 				//改行を行う
@@ -119,23 +153,52 @@ namespace Sanae {
 			return *this;
 		}
 	};
-
-
 	//MNISTデータセットの文字を出力する。
-	Plot MNIST_PLOT = 28;
+	_PLOT_ PLOT = 28;
 
 
+	//サイズを変更します。
+	void Change_Size(Matrix& _Data, Matrix& _Store,double _Ratio,SizeT _Center = { 14,14 }) {
+		auto Pos = [_Ratio,_Center](SizeT _Data) {
+			Ulong x = (Ulong)((long long)_Center.first  + (1/_Ratio) * ((long long)_Data.first  - (long long)_Center.first));
+			Ulong y = (Ulong)((long long)_Center.second + (1/_Ratio) * ((long long)_Data.second - (long long)_Center.second));
+
+			return SizeT{x,y};
+		};
+
+		//中心点よりサイズが小さい場合はthrowする。
+		if (_Data.GetSizeWH().first <= _Center.first || _Data.GetSizeWH().second <= _Center.second)
+			throw std::invalid_argument("_DataSize must be greater than the _Center.");
+
+		//_Storeのサイズを_Dataと同じにする。
+		_Store.SetSize(_Data.GetSizeWH(), true);
+
+		for (Ulong y = 0; y < _Data.GetSizeWH().second; y++) {
+			for (Ulong x = 0; x < _Data.GetSizeWH().first; x++) {
+				//配列番号
+				SizeT pos = Pos({ x,y });
+
+				//範囲外は無視する。
+				if (pos.first < _Data.GetSizeWH().first && pos.second < _Data.GetSizeWH().second)
+					_Store[{x, y}] += _Data[pos];
+			}
+		}
+
+		return;
+	}
+
+	//角度を変更します。
 	void Change_Angle(Matrix& _Data, Matrix& _Store, double _Deg, std::pair<int, int> _Center = {14,14}) {
-		const double _PI  = 3.1415926535897932384626433833; //円周率
-		const double _Rad = _PI * _Deg / 180;               //ラジアンに変換
+		const double _PI  = 3.141592653589793; //円周率
+		const double _Rad = _PI * _Deg / 180;  //ラジアンに変換
 		
 		//入力データを_Rad[rad]傾けた配列番号を返す。
 		auto Angle = [_Rad, _Center](SizeT _Data)
 		{
 			double x = _Center.first  + (std::cos(_Rad) * ((long long)_Data.first - _Center.first) - std::sin(_Rad) * ((long long)_Data.second - _Center.second));
 			double y = _Center.second + (std::sin(_Rad) * ((long long)_Data.first - _Center.first) + std::cos(_Rad) * ((long long)_Data.second - _Center.second));
-
-			return SizeT{ static_cast<Ulong>(x), static_cast<Ulong>(y) };
+			
+			return SizeT{ static_cast<Ulong>(std::nearbyint(x)), static_cast<Ulong>(std::nearbyint(y))};
 		};
 
 		//中心点よりサイズが小さい場合はthrowする。
@@ -158,6 +221,8 @@ namespace Sanae {
 
 		return;
 	}
+
+
 }
 
 

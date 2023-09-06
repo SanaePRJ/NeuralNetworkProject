@@ -8,14 +8,15 @@
 
 #include "Plot.hpp"
 #include "Matrix.h"
-#include "ReadCSV.hpp"
+#include "CSV.hpp"
 #include "NeuralNetwork.hpp"
 
 
 using namespace Sanae;
 
-Ulong LearnCount = 6000;  //学習回数
-Ulong testCount  = 10000; //テスト回数
+
+Ulong LearnCount = 6000;   //学習回数
+Ulong testCount  = 10000;   //テスト回数
 
 void   NN_Learn(NN* Machine);
 void   NN_test (NN* Machine);
@@ -37,7 +38,7 @@ void NN_Learn(NN* Machine) {
 		image_buf.Deformation({784,1});
 
 		//学習
-		Machine->Learn(image_buf, Ideal);
+		Machine->Learn(image_buf,Ideal);
 
 		//元の行列に変換
 		image.Deformation({ 784,1 });
@@ -45,11 +46,17 @@ void NN_Learn(NN* Machine) {
 	auto Read = [&](Matrix& image, Matrix& Ideal)
 	{
 		//正解データ(onehot表現)
-		Ideal[file.ReadDataD<double>()] = 1;
+		Ideal[std::stoull(file.ReadData())] = 1;
 
 		//CSVfileからデータを読み取る。
-		std::vector<double> buf;
-		file.ReadLineD(&buf, 784);
+		std::vector<std::string> buf_str;
+		std::vector<double>      buf;
+
+		file.ReadLine(&buf_str, 784);
+		buf.resize(buf_str.size());
+
+		for (Ulong i = 0; i < buf_str.size();i++)
+			buf[i] = std::stod(buf_str[i]);
 
 		//正規化
 		for (Ulong i = 0; i < buf.size(); i++)
@@ -63,15 +70,15 @@ void NN_Learn(NN* Machine) {
 		Matrix image;
 		Matrix Ideal = SizeT{ 10,1 };
 
-		Read          (image,Ideal);
-		Machine->Learn(image,Ideal);
-
+		Read(image, Ideal);
+		Machine->Learn(image, Ideal);
+		
 		//10°傾けて学習
-		ChangeAngleLearn(image, Ideal,  10);
+		ChangeAngleLearn(image, Ideal, 10);
 		ChangeAngleLearn(image, Ideal, -10);
-
+		
 		if (count % 100 == 0)
-			printf("%.2lf\n",(double)count/(double)LearnCount * 100);
+			printf("学習進捗:%.2lf\n", (double)count / (double)LearnCount * 100);
 	}
 
 	printf("学習完了しました。");
@@ -83,11 +90,17 @@ void NN_test(NN* Machine) {
 	
 	auto Read = [&](Matrix& image,Ulong& Ideal) {
 		//正解データ
-		Ideal = file.ReadDataD<double>();
+		Ideal = std::stoul(file.ReadData());
 
 		//CSVfileからデータを読み取る。
-		std::vector<double> buf;
-		file.ReadLineD(&buf, 784);
+		std::vector<std::string> buf_str;
+		std::vector<double>      buf;
+
+		file.ReadLine(&buf_str, 784);
+		buf.resize(buf_str.size());
+
+		for (Ulong i = 0; i < buf_str.size(); i++)
+			buf[i] = std::stod(buf_str[i]);
 
 		//正規化
 		for (Ulong v = 0; v < buf.size(); v++)
@@ -119,18 +132,24 @@ void NN_test(NN* Machine) {
 	}
 
 	printf("%.1lf%%\n",_Accuracy/testCount * 100);
-
 	return;
 }
 
+
 int main() {
-	NN Machine = { 784,50,10,0.03,(unsigned int)time(0UL) };
+	Console << Color_Console{Color{0, 0, 0}, Color{ 0,255,0 }};
+	printf("Copyright 2023 SanaeProject.\n");
+	Console.Reset();
+
+
+	NN Machine = { 784,20,10,0.02,(unsigned int)time(0UL) };
 
 	//過去の重みを入力
 	try {
-		Machine.Read("test.csv");
+		Machine.Read("MakeNum2.csv");
 	}
-	catch (std::exception exption) {}
+	catch (std::exception) 
+	{}
 
 	//学習
 	NN_Learn(&Machine);
@@ -140,6 +159,6 @@ int main() {
 	printf("記録しますか？\nyes:y no:その他キー\n");
 	if (_getwch()=='y'){
 		printf("記録します。\n");
-		Machine.Write("test.csv");
+		Machine.Write("MakeNum2.csv");
 	}
 }

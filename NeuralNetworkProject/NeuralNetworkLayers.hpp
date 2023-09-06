@@ -1,7 +1,7 @@
 /*=============================================================
 * NAME      : NeuralNetworkLayers.hpp
 * AUTHOR    : SanaeProject
-* VER       : 1.0.1
+* VER       : 2.0.0
 * COPYRIGHGT: Copyright 2023 SanaeProject.
 =============================================================*/
 
@@ -21,7 +21,7 @@
 
 
 namespace Sanae {
-
+	
 
 /*------活性化関数------*/
 	//Sigmoid関数 Sigmoid(x) = 1 / {1+e^-x}
@@ -254,6 +254,67 @@ namespace Sanae {
 		}
 	};
 
+	class Layer_Recurrent_Affine  : public Layer_Base
+	{
+	private:
+		Matrix Input;
+		Matrix Input_Recurrent;
+
+	public:
+		//重みとバイアス
+		Matrix Recurrent;
+		Matrix Weight;
+		Matrix Bias;
+
+		//この変数により重みを改善する。
+		Matrix D_Weight;
+		Matrix D_Bias;
+		Matrix D_Recurrent;
+
+	public:
+		Layer_Recurrent_Affine(Ulong _Input_Size, Ulong _Output_Size, std::default_random_engine* _Engine, std::normal_distribution<>  _dist)
+		{
+			if (_Input_Size == _Output_Size)
+				throw std::invalid_argument("Must be same size.");
+
+			this->Is_Affine = true;
+
+			Weight   .SetSize(SizeT{ _Output_Size,_Input_Size });
+			Bias     .SetSize(SizeT{ _Output_Size, 1          });
+			Recurrent.SetSize(SizeT{ _Input_Size , 1          });
+
+			Set_Random_Num(&Weight   , _Engine, _dist);
+			Set_Random_Num(&Bias     , _Engine, _dist);
+			Set_Random_Num(&Recurrent, _Engine, _dist);
+		}
+		Matrix forward
+		(
+			Matrix* _In,
+			Matrix* _Recurrent
+		)
+		{
+			Input_Recurrent = *_Recurrent;
+			Input           = *_In;
+			Matrix Output   = Input * Weight + Bias + (_Recurrent->Inner_Product(this->Recurrent));
+						
+			return Output;
+		}
+		Matrix backward
+		(
+			Matrix* _dout
+		)
+			override
+		{
+			Matrix Diff = (*_dout) * Weight.Transpose();
+
+			this->D_Weight = this->Input.Transpose() * (*_dout);
+			this->D_Bias   = *_dout;
+			this->D_Recurrent = _dout->Inner_Product(this->Input_Recurrent);
+
+			return Diff;
+		}
+	};
+
 /*------出力層------*/
 	//SoftMaxレイヤー
 	class Layer_SoftMax : public Layer_Base
@@ -320,7 +381,10 @@ namespace Sanae {
 			return Diff;
 		}
 	};
+
+	
 }
+
 
 
 #endif

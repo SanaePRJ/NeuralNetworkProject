@@ -1,7 +1,7 @@
 /*=============================================================
 * NAME      : NeuralNetwork.hpp
 * AUTHOR    : SanaeProject
-* VER       : 1.0.1
+* VER       : 2.0.0
 * COPYRIGHGT: Copyright 2023 SanaeProject.
 =============================================================*/
 
@@ -19,7 +19,8 @@
 
 #include "Matrix.h"
 #include "NeuralNetworkLayers.hpp"
-#include "ReadCSV.hpp"
+#include "CSV.hpp"
+#include "NeuralNetworkDoc.hpp"
 
 
 //正常にインクルードしていること。 C++14以上
@@ -27,6 +28,8 @@
 
 
 namespace Sanae {
+
+
 	//勾配法により重みを修正する。
 	void WeightUpdate_SGD
 	(
@@ -35,7 +38,19 @@ namespace Sanae {
 	)
 	{
 		_Layer->Weight -= _Layer->D_Weight * _LearnRate;
-		_Layer->Bias   -= _Layer->D_Bias   * _LearnRate;
+		_Layer->Bias -= _Layer->D_Bias * _LearnRate;
+
+		return;
+	}
+	void WeightUpdate_SGD
+	(
+		Layer_Recurrent_Affine* _Layer,
+		double                  _LearnRate
+	)
+	{
+		_Layer->Recurrent -= _Layer->D_Recurrent * _LearnRate;
+		_Layer->Weight    -= _Layer->D_Weight    * _LearnRate;
+		_Layer->Bias      -= _Layer->D_Bias      * _LearnRate;
 
 		return;
 	}
@@ -56,25 +71,26 @@ namespace Sanae {
 		{
 			//シード値を設定。
 			std::default_random_engine Engine(_Seed); 
-			std::normal_distribution<> Dist  (0,1);   //平均0,標準偏差1で生成
-
 			LearnRate = _Learn_rate;
+			
+			//乱数
+			std::normal_distribution<> DistIn    (0, (1 / std::sqrt(_Input_Nodes)));     //平均0,標準偏差(1/√入力数)で生成
+			std::normal_distribution<> DistHidden(0, (1 / std::sqrt(_Hidden_Nodes)));    //平均0,標準偏差(1/√入力数)で生成
+			std::normal_distribution<> DistOut   (0, (1 / std::sqrt(_Hidden_Nodes)));    //平均0,標準偏差(1/√入力数)で生成
 			
 			//Affineレイヤの設定
 			static std::vector<Layer_Affine> Affine;
+			Affine.push_back({ _Input_Nodes,_Hidden_Nodes ,&Engine,DistIn });
 
-			Affine.push_back({ _Input_Nodes,_Hidden_Nodes ,&Engine,Dist });
-
-			Affine.push_back({ _Hidden_Nodes,_Hidden_Nodes,&Engine,Dist });
-			Affine.push_back({ _Hidden_Nodes,_Hidden_Nodes,&Engine,Dist });
-
-			Affine.push_back({ _Hidden_Nodes,_Output_Nodes,&Engine,Dist });
+			Affine.push_back({ _Hidden_Nodes,_Hidden_Nodes,&Engine,DistHidden });
+			
+			Affine.push_back({ _Hidden_Nodes,_Output_Nodes,&Engine,DistOut });
 
 			//シグモイドレイヤの設定
 			static std::vector<Layer_Sigmoid> Sigmoid;
 			Sigmoid.push_back({});
 			Sigmoid.push_back({});
-
+			
 			//SoftMaxレイヤの設定
 			static Layer_SoftMax SoftMax  = {};
 			
@@ -86,7 +102,7 @@ namespace Sanae {
 			Layers.push_back(&Sigmoid[1]);
 
 			//Affineレイヤのラスト
-			Layers.push_back(&*(Affine.end()-1));
+			Layers.push_back(&Affine[2]);
 			Layers.push_back(&SoftMax);
 		}
 
@@ -114,7 +130,7 @@ namespace Sanae {
 			buf = Layers[Layers.size() -1]->backward(&_t);
 
 			//逆伝番
-			for (int i = Layers.size() - 2; i >= 0; i--) {
+			for (int i = (int)Layers.size() - 2; i >= 0; i--) {
 				buf = Layers[i]->backward(&buf);
 
 				//Affineレイヤだった場合Weightの修正
@@ -125,114 +141,40 @@ namespace Sanae {
 
 		//重みを次回読み取れるようCSVで出力。
 		void Write(const char* _WriteFile) {
-			std::ofstream ofs(_WriteFile);
-			ofs << "AffineLayerCount,"<< this->Layers.size()/2 << "\n";
+			WriteCSV write(_WriteFile,true);
 
-			auto WriteAffine = [&](Ulong Layer_Point)
-			{
-				//Affineレイヤの番号を出力
-				(ofs << Layer_Point) << "\n";
-
-				//重みの列,行数を格納
-				SizeT Size = ((Layer_Affine*)Layers[Layer_Point])->Weight.GetSizeWH();
-
-				//列数と行数を書き込む
-				ofs << "Weight," << Size.first<< "," << Size.second << "\n";
-
-				for (Ulong i = 0; i < ((Layer_Affine*)Layers[Layer_Point])->Weight.GetSize(); i++) {
-					//それぞれの重みを書き込んでいく
-					(ofs << ((Layer_Affine*)Layers[Layer_Point])->Weight[i]);
-
-					//改行
-					if ((i + 1) % Size.first == 0)
-						ofs << "\n";
-					//CSVなのでコンマ区切り
-					else
-						ofs << ",";
-				}
-
-				//バイアスサイズの書き込み
-				Size = ((Layer_Affine*)Layers[Layer_Point])->Bias.GetSizeWH();
-				//バイアスの列数,行数を書き込み
-				ofs << "Bias," << Size.first << "," << Size.second << "\n";
-
-				for (Ulong i = 0; i < ((Layer_Affine*)Layers[Layer_Point])->Bias.GetSize(); i++) {
-					//それぞれのバイアスの書き込み
-					(ofs << ((Layer_Affine*)Layers[Layer_Point])->Bias[i]);
-
-					if ((i + 1) % Size.first == 0)
-						ofs << "\n";
-					else
-						ofs << ",";
-				}
-			};
-
-			//各層の重み、バイアスを出力
 			for (Ulong i = 0; i < this->Layers.size();i++) {
-				if (Layers[i]->Is_Affine)
-					WriteAffine(i);
+				if (this->Layers[i]->Is_Affine && i == 0) {
+					Layer_Affine* affine          = (Layer_Affine*)this->Layers[i];
+					_NeuralNetwork_DOC_Write_ Buf = {&write,i/2,&affine->Weight,&affine->Bias,NULL};
+					
+					NeuralNetwork_Write(Buf,true, this->Layers.size()/2);
+				}else if (this->Layers[i]->Is_Affine) {
+					Layer_Affine* affine = (Layer_Affine*)this->Layers[i];
+					_NeuralNetwork_DOC_Write_ Buf = { &write,i / 2,&affine->Weight,&affine->Bias,NULL };
+
+					NeuralNetwork_Write(Buf);
+				}
 			}
 		}
 
 		//書き込まれた重みバイアスを読み取る。
 		void Read(const char* _ReadFile) {
-			//ReadCSVで開く
-			ReadCSV input = _ReadFile;
+			ReadCSV write(_ReadFile);
 
-			Ulong Count = 0;
-			for (Ulong i = 0; i < this->Layers.size();i++)
-				Count += this->Layers[i]->Is_Affine ? 1: 0;
-			
-			//形式に合わない場合はエラー
-			if(input.ReadDataStr<std::string>() != "AffineLayerCount") throw std::invalid_argument("");
-			if(input.ReadDataD<double>() != Count)                     throw std::invalid_argument("");
+			for (Ulong i = 0; i < this->Layers.size(); i++) {
+				if (this->Layers[i]->Is_Affine && i == 0) {
+					Layer_Affine* affine         = (Layer_Affine*)this->Layers[i];
+					_NeuralNetwork_DOC_Read_ Buf = { &write,i / 2,&affine->Weight,&affine->Bias,NULL };
 
-			//重みを読み取る。
-			auto ReadWeight = [&](Ulong point)
-			{
-				//形式似合わない場合はエラー
-				if (input.ReadDataStr<std::string>() != "Weight") throw std::invalid_argument("");
+					NeuralNetwork_Read(Buf, true, this->Layers.size() / 2);
+				}
+				else if (this->Layers[i]->Is_Affine) {
+					Layer_Affine* affine         = (Layer_Affine*)this->Layers[i];
+					_NeuralNetwork_DOC_Read_ Buf = { &write,i / 2,&affine->Weight,&affine->Bias,NULL };
 
-				//列数,行数を格納
-				SizeT Size = SizeT{ input.ReadDataI<int>(),input.ReadDataI<int>() };
-				
-				//重みを格納
-				std::vector<double> Weight_buf;
-				
-				//読み取る。
-				for (Ulong i = 0; i < Size.second; i++)
-					input.ReadLineD<double>(&Weight_buf, Size.first);
-				
-				//重みを格納したvector配列をMatrix型にmoveする。
-				((Layer_Affine*)Layers[point])->Weight.Move(&Weight_buf, Size);
-			};
-
-			//バイアスを読み取る。
-			auto ReadBias   = [&](Ulong point)
-			{
-				//形式に合わない場合はエラー
-				if (input.ReadDataStr<std::string>() != "Bias") throw std::invalid_argument("");
-
-				//列数行数を格納
-				SizeT Size = SizeT{ input.ReadDataI<int>(),input.ReadDataI<int>() };
-				
-				//バイアスの格納
-				std::vector<double> Bias_buf;
-
-				//読み取る。
-				for (Ulong i = 0; i < Size.second; i++)
-					input.ReadLineD<double>(&Bias_buf, Size.first);
-
-				//重みを格納したvector配列をMatrix型にmoveする。
-				((Layer_Affine*)Layers[point])->Bias.Move(&Bias_buf, Size);
-			};
-
-			for (Ulong i = 0; i < Count;i++) {
-				Ulong Pos = (Ulong)input.ReadDataI<int>();
-
-				//重みとバイアスを読み取る。
-				ReadWeight(Pos);
-				ReadBias(Pos);
+					NeuralNetwork_Read(Buf);
+				}
 			}
 		}
 	};

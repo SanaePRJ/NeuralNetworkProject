@@ -188,13 +188,13 @@ namespace Sanae {
 		//大きさを返します。 first:列 second:行
 		SizeT GetSizeWH();
 
-		//(非破壊的処理)内積を求めます。
-		Matrix& Inner_Product
+		//(非壊的処理)内積を求めます。
+		Matrix Inner_Product
 		(
 			Matrix&
 		);
 		//(破壊的処理)内積を求めます。
-		Matrix Inner_Product_Destructive
+		Matrix& Inner_Product_Destructive
 		(
 			Matrix&
 		);

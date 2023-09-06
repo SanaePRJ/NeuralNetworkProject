@@ -380,8 +380,8 @@ namespace Sanae{
 		return this->_Size;
 	}
 
-	//(非破壊的処理)内積を求めます。
-	Matrix& Matrix::Inner_Product
+	//(破壊的処理)内積を求めます。
+	Matrix& Matrix::Inner_Product_Destructive
 	(
 		Matrix& _Data
 	)
@@ -389,8 +389,8 @@ namespace Sanae{
 		this->_Inner_Product(&this->_Main,&this->_Size,&_Data._Main,&_Data._Size,&this->_Main,false);
 		return *this;
 	}
-	//(破壊的処理)内積を求めます。
-	Matrix Matrix::Inner_Product_Destructive
+	//(非破壊的処理)内積を求めます。
+	Matrix Matrix::Inner_Product
 	(
 		Matrix& _Data
 	) 
