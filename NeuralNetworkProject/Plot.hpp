@@ -24,19 +24,19 @@
 namespace Sanae {
 
 
-	//RGB‚ğŠi”[
+	//RGBã‚’æ ¼ç´
 	struct Color {
 		unsigned char R = 0, G = 0, B = 0;
 	};
 
-	//•¶šF‚Æ”wŒi‚ÌRGB‚ğŠi”[
+	//æ–‡å­—è‰²ã¨èƒŒæ™¯ã®RGBã‚’æ ¼ç´
 	struct Color_Console {
 		Color Letter, BackGround;
 	};
 	const Color_Console Default_Color = { Color{255,255,255},Color{0,0,0} };
 	
 
-	//Console‚ÌF‚ğ•ÏX‚µ‚Ü‚·B
+	//Consoleã®è‰²ã‚’å¤‰æ›´ã—ã¾ã™ã€‚
 	class _CONSOLE_ {
 	private:
 		void Set_Color
@@ -47,14 +47,14 @@ namespace Sanae {
 		{
 			std::string buf;
 
-			//•¶šF
+			//æ–‡å­—è‰²
 			buf = "\x1b[38;2;";
 			(buf += std::to_string((int)_Letter_Color.R)) += ";";
 			(buf += std::to_string((int)_Letter_Color.G)) += ";";
 			(buf += std::to_string((int)_Letter_Color.B)) += "m";
 			std::cout << buf;
 
-			//”wŒiF
+			//èƒŒæ™¯è‰²
 			buf = "\x1b[48;2;";
 			(buf += std::to_string((int)_Background_Color.R)) += ";";
 			(buf += std::to_string((int)_Background_Color.G)) += ";";
@@ -69,7 +69,7 @@ namespace Sanae {
 	public:
 		_CONSOLE_()
 		{
-		//ƒGƒXƒP[ƒvƒV[ƒPƒ“ƒX
+		//ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹
 		#if __has_include("windows.h")
 			HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 			DWORD  mode = 0;
@@ -79,7 +79,7 @@ namespace Sanae {
 		#endif
 		}
 
-		//Console‚ÌF‚ğİ’è
+		//Consoleã®è‰²ã‚’è¨­å®š
 		_CONSOLE_& operator << (const Color_Console _Console_Color)
 		{
 			this->Set_Color(_Console_Color.Letter, _Console_Color.BackGround);
@@ -103,10 +103,10 @@ namespace Sanae {
 	_CONSOLE_ Console;
 
 
-	//MNISTƒf[ƒ^ƒZƒbƒg‚Ì•¶š‚ğo—Í‚·‚é‚½‚ß‚ÌŒ^
+	//MNISTãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã®æ–‡å­—ã‚’å‡ºåŠ›ã™ã‚‹ãŸã‚ã®å‹
 	class _PLOT_ {
 	private:
-		//Plot‚·‚éƒTƒCƒY
+		//Plotã™ã‚‹ã‚µã‚¤ã‚º
 		size_t Weight;
 
 	public:
@@ -115,34 +115,25 @@ namespace Sanae {
 			size_t _Weight
 		)
 			: Weight(_Weight)
-		{
-		//ƒGƒXƒP[ƒvƒV[ƒPƒ“ƒX
-		#if __has_include("windows.h")
-			HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-			DWORD  mode      = 0;
-
-			GetConsoleMode(stdHandle, &mode);
-			SetConsoleMode(stdHandle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-		#endif
-		}
+		{}
 		
-		//•\¦
+		//è¡¨ç¤º
 		template<typename Type> _PLOT_& operator << (const std::vector<Type>& _View_Data)
 		{
 			size_t _point = 0;
 
 			for (Type View : _View_Data) {
-				//”wŒi‚ğ•ÏX
+				//èƒŒæ™¯ã‚’å¤‰æ›´
 				Console << Color_Console{Color{ 0, 0, 0 }, { (unsigned char)(std::abs(View)),(unsigned char)(std::abs(View)),(unsigned char)(std::abs(View)) }};
 				
-				//‹ó”’‚ğo—Í
-				std::cout << "@";
+				//ç©ºç™½ã‚’å‡ºåŠ›
+				std::cout << "ã€€";
 
-				//”wŒiF‚ğƒŠƒZƒbƒg
+				//èƒŒæ™¯è‰²ã‚’ãƒªã‚»ãƒƒãƒˆ
 				Console.Reset_Color();
 				_point++;
 
-				//‰üs‚ğs‚¤
+				//æ”¹è¡Œã‚’è¡Œã†
 				if(_point == this->Weight){
 					_point = 0;
 					std::cout << std::endl;
@@ -153,11 +144,11 @@ namespace Sanae {
 			return *this;
 		}
 	};
-	//MNISTƒf[ƒ^ƒZƒbƒg‚Ì•¶š‚ğo—Í‚·‚éB
+	//MNISTãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã®æ–‡å­—ã‚’å‡ºåŠ›ã™ã‚‹ã€‚
 	_PLOT_ PLOT = 28;
 
 
-	//ƒTƒCƒY‚ğ•ÏX‚µ‚Ü‚·B
+	//ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã—ã¾ã™ã€‚
 	void Change_Size(Matrix& _Data, Matrix& _Store,double _Ratio,SizeT _Center = { 14,14 }) {
 		auto Pos = [_Ratio,_Center](SizeT _Data) {
 			Ulong x = (Ulong)((long long)_Center.first  + (1/_Ratio) * ((long long)_Data.first  - (long long)_Center.first));
@@ -166,19 +157,19 @@ namespace Sanae {
 			return SizeT{x,y};
 		};
 
-		//’†S“_‚æ‚èƒTƒCƒY‚ª¬‚³‚¢ê‡‚Íthrow‚·‚éB
+		//ä¸­å¿ƒç‚¹ã‚ˆã‚Šã‚µã‚¤ã‚ºãŒå°ã•ã„å ´åˆã¯throwã™ã‚‹ã€‚
 		if (_Data.GetSizeWH().first <= _Center.first || _Data.GetSizeWH().second <= _Center.second)
 			throw std::invalid_argument("_DataSize must be greater than the _Center.");
 
-		//_Store‚ÌƒTƒCƒY‚ğ_Data‚Æ“¯‚¶‚É‚·‚éB
+		//_Storeã®ã‚µã‚¤ã‚ºã‚’_Dataã¨åŒã˜ã«ã™ã‚‹ã€‚
 		_Store.SetSize(_Data.GetSizeWH(), true);
 
 		for (Ulong y = 0; y < _Data.GetSizeWH().second; y++) {
 			for (Ulong x = 0; x < _Data.GetSizeWH().first; x++) {
-				//”z—ñ”Ô†
+				//é…åˆ—ç•ªå·
 				SizeT pos = Pos({ x,y });
 
-				//”ÍˆÍŠO‚Í–³‹‚·‚éB
+				//ç¯„å›²å¤–ã¯ç„¡è¦–ã™ã‚‹ã€‚
 				if (pos.first < _Data.GetSizeWH().first && pos.second < _Data.GetSizeWH().second)
 					_Store[{x, y}] += _Data[pos];
 			}
@@ -187,12 +178,12 @@ namespace Sanae {
 		return;
 	}
 
-	//Šp“x‚ğ•ÏX‚µ‚Ü‚·B
+	//è§’åº¦ã‚’å¤‰æ›´ã—ã¾ã™ã€‚
 	void Change_Angle(Matrix& _Data, Matrix& _Store, double _Deg, std::pair<int, int> _Center = {14,14}) {
-		const double _PI  = 3.141592653589793; //‰~ü—¦
-		const double _Rad = _PI * _Deg / 180;  //ƒ‰ƒWƒAƒ“‚É•ÏŠ·
+		const double _PI  = 3.141592653589793; //å††å‘¨ç‡
+		const double _Rad = _PI * _Deg / 180;  //ãƒ©ã‚¸ã‚¢ãƒ³ã«å¤‰æ›
 		
-		//“ü—Íƒf[ƒ^‚ğ_Rad[rad]ŒX‚¯‚½”z—ñ”Ô†‚ğ•Ô‚·B
+		//å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã‚’_Rad[rad]å‚¾ã‘ãŸé…åˆ—ç•ªå·ã‚’è¿”ã™ã€‚
 		auto Angle = [_Rad, _Center](SizeT _Data)
 		{
 			double x = _Center.first  + (std::cos(_Rad) * ((long long)_Data.first - _Center.first) - std::sin(_Rad) * ((long long)_Data.second - _Center.second));
@@ -201,19 +192,19 @@ namespace Sanae {
 			return SizeT{ static_cast<Ulong>(std::nearbyint(x)), static_cast<Ulong>(std::nearbyint(y))};
 		};
 
-		//’†S“_‚æ‚èƒTƒCƒY‚ª¬‚³‚¢ê‡‚Íthrow‚·‚éB
+		//ä¸­å¿ƒç‚¹ã‚ˆã‚Šã‚µã‚¤ã‚ºãŒå°ã•ã„å ´åˆã¯throwã™ã‚‹ã€‚
 		if (_Data.GetSizeWH().first <= _Center.first || _Data.GetSizeWH().second <= _Center.second)
 			throw std::invalid_argument("_DataSize must be greater than the _Center.");
 
-		//_Store‚ÌƒTƒCƒY‚ğ_Data‚Æ“¯‚¶‚É‚·‚éB
+		//_Storeã®ã‚µã‚¤ã‚ºã‚’_Dataã¨åŒã˜ã«ã™ã‚‹ã€‚
 		_Store.SetSize(_Data.GetSizeWH(), true);
 
 		for (Ulong y = 0; y < _Data.GetSizeWH().second; y++) {
 			for (Ulong x = 0; x < _Data.GetSizeWH().first; x++) {
-				//ŒX‚¯‚½æ‚Ì”z—ñ”Ô†
+				//å‚¾ã‘ãŸå…ˆã®é…åˆ—ç•ªå·
 				SizeT pos = Angle({ x,y });
 
-				//”ÍˆÍŠO‚Í–³‹‚·‚éB
+				//ç¯„å›²å¤–ã¯ç„¡è¦–ã™ã‚‹ã€‚
 				if (pos.first < _Data.GetSizeWH().first && pos.second < _Data.GetSizeWH().second)
 					_Store[{x, y}] += _Data[pos];
 			}
