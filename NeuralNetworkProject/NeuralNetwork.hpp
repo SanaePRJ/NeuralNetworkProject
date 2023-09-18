@@ -17,14 +17,14 @@
 #include <fstream>
 #include <stdexcept>
 
-#include "Matrix.h"
+#include "Matrix.hpp"
 #include "NeuralNetworkLayers.hpp"
 #include "CSV.hpp"
 #include "NeuralNetworkDoc.hpp"
 
 
 //正常にインクルードしていること。 C++14以上
-#if defined(_SANAE_MATRIXBASE_HPP_ALL_INCLUDE_)
+#if defined(SANAE_MATRIXBASE_HPP_ALL_INCLUDE)
 
 
 namespace Sanae {

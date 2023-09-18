@@ -13,7 +13,7 @@
 #include <fstream>
 #include <string>
 
-#include "Matrix.h"
+#include "Matrix.hpp"
 #include "CSV.hpp"
 
 

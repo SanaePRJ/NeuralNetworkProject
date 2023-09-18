@@ -7,7 +7,7 @@
 
 
 #include "Plot.hpp"
-#include "Matrix.h"
+#include "Matrix.hpp"
 #include "CSV.hpp"
 #include "NeuralNetwork.hpp"
 
@@ -18,13 +18,18 @@ using namespace Sanae;
 Ulong LearnCount = 6000;   //学習回数
 Ulong testCount  = 10000;   //テスト回数
 
-void   NN_Learn(NN* Machine);
+void   NN_Learn(NN* Machine,Ulong);
 void   NN_test (NN* Machine);
 
 
-void NN_Learn(NN* Machine) {
+void NN_Learn(NN* Machine,Ulong through = 0) {
 	ReadCSV file = "mnist_train.csv";
 	
+	for (Ulong i = 0; i < through;i++) {
+		std::vector<std::string> buf_str;
+		file.ReadLine(&buf_str,785);
+	}
+
 	auto ChangeAngleLearn = [&](Matrix& image,Matrix& Ideal,double rad)
 	{
 		Matrix image_buf;
@@ -142,7 +147,7 @@ int main() {
 	Console.Reset();
 
 
-	NN Machine = { 784,20,10,0.02,(unsigned int)time(0UL) };
+	NN Machine = { 784,20,10,0.03,(unsigned int)time(0UL) };
 
 	//過去の重みを入力
 	try {
@@ -152,7 +157,7 @@ int main() {
 	{}
 
 	//学習
-	NN_Learn(&Machine);
+	NN_Learn(&Machine,6000);
 	//正答率
 	NN_test (&Machine);
 

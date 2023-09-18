@@ -158,12 +158,8 @@
     <ClCompile Include="NeuralNetworkProject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Matrix.h" />
-    <ClInclude Include="Matrix\Matrix.hpp" />
-    <ClInclude Include="Matrix\MatrixBase\MatrixBase.hpp" />
-    <ClInclude Include="Matrix\MatrixBase\MatrixBaseImpl.hpp" />
-    <ClInclude Include="Matrix\MatrixDet.hpp" />
-    <ClInclude Include="Matrix\MatrixImpl.hpp" />
+    <ClInclude Include="Matrix.hpp" />
+    <ClInclude Include="MatrixBase.hpp" />
     <ClInclude Include="NeuralNetwork.hpp" />
     <ClInclude Include="NeuralNetworkLayers.hpp" />
     <ClInclude Include="NeuralNetworkDoc.hpp" />

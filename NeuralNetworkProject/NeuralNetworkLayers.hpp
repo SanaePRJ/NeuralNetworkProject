@@ -11,13 +11,17 @@
 
 
 //正常にインクルードしていること。 C++14以上
-#if defined(_SANAE_MATRIXBASE_HPP_ALL_INCLUDE_)
+#if defined(SANAE_MATRIXBASE_HPP_ALL_INCLUDE)
 
 
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <random>
+#include <algorithm>
+
+#include "Matrix.hpp"
 
 
 namespace Sanae {
@@ -42,7 +46,7 @@ namespace Sanae {
 		Matrix Output = _In->GetSizeWH();
 
 		const std::vector<double>* VecP = _In->GetVectorP();
-		const double               Max = *std::max_element(VecP->begin(), VecP->end());
+		const double               Max = *(std::max_element(VecP->begin(), VecP->end()));
 
 		double                     Sum = 0;
 
