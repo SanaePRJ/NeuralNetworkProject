@@ -14,7 +14,7 @@
 
 
 /*-----Include-----*/
-#include "Matrix.hpp"
+#include "Matrix-for-Cpp-4.0.3/Matrix/Matrix/Matrix.hpp"
 
 #include <iostream>
 #include <string>
@@ -23,7 +23,6 @@
 
 
 /*-----Check Version C++14 or more and Is existing-----*/
-#if defined(SANAE_CPP_14_OR_MORE) && defined(SANAE_MATRIXBASE_HPP_ALL_INCLUDE)
 
 
 
@@ -177,7 +176,7 @@ public:
 	void ReadLine
 	(
 		std::vector<std::string>* _Store,
-		Ulong                     _Surplus = 10
+		size_t                    _Surplus = 10
 	)
 	{
 		this->Is_NewLine = false;
@@ -395,5 +394,4 @@ public:
 
 
 
-#endif
 #endif

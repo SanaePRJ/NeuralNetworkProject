@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{39f51e61-b71e-433f-9aee-1734217fd427}</ProjectGuid>
-    <RootNamespace>NeuralNetworkProject</RootNamespace>
+    <ProjectGuid>{f05234a9-1b1e-4465-98bd-f1da6b70f77b}</ProjectGuid>
+    <RootNamespace>Matrix</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -70,28 +70,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
-  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <OmitFramePointers>true</OmitFramePointers>
-      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
-      <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -101,15 +86,11 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <Optimization>Full</Optimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <OmitFramePointers>true</OmitFramePointers>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,10 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <OmitFramePointers>true</OmitFramePointers>
-      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
-      <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,15 +115,11 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <Optimization>Full</Optimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <OmitFramePointers>true</OmitFramePointers>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,28 +129,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="NeuralNetworkProject.cpp" />
-    <ClCompile Include="NNLayers.hpp" />
+    <ClCompile Include="Matrix.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\Matrix.h" />
-    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\Matrix.hpp" />
-    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixAdvCalc.hpp" />
-    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixCalc.hpp" />
-    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixConstructor.hpp" />
-    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixOperator.hpp" />
-    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixUtil.hpp" />
-    <ClInclude Include="CSV.hpp" />
-    <ClInclude Include="Matrix-for-Cpp-4.0.3\Matrix\Matrix\MatrixCalc.hpp" />
-    <ClInclude Include="NeuralNetwork.hpp" />
-    <ClInclude Include="Plot.hpp" />
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="..\README-JP.md" />
     <None Include="..\README.md" />
-    <None Include="mnist_test.csv" />
-    <None Include="mnist_test_10.csv" />
-    <None Include="mnist_train.csv" />
-    <None Include="mnist_train_100.csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Matrix\Matrix.h" />
+    <ClInclude Include="Matrix\Matrix.hpp" />
+    <ClInclude Include="Matrix\MatrixAdvCalc.hpp" />
+    <ClInclude Include="Matrix\MatrixCalc.hpp" />
+    <ClInclude Include="Matrix\MatrixConstructor.hpp" />
+    <ClInclude Include="Matrix\MatrixOperator.hpp" />
+    <ClInclude Include="Matrix\MatrixUtil.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -13,32 +13,50 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Matrix">
+      <UniqueIdentifier>{81a5c260-8b9f-4c48-b0df-f62dde908242}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NeuralNetworkProject.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="NNLayers.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="NeuralNetwork.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="NeuralNetworkLayers.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="CSV.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixCalc.hpp">
+      <Filter>ヘッダー ファイル\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixConstructor.hpp">
+      <Filter>ヘッダー ファイル\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixOperator.hpp">
+      <Filter>ヘッダー ファイル\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixUtil.hpp">
+      <Filter>ヘッダー ファイル\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\Matrix.h">
+      <Filter>ヘッダー ファイル\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\Matrix.hpp">
+      <Filter>ヘッダー ファイル\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixAdvCalc.hpp">
+      <Filter>ヘッダー ファイル\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="NeuralNetwork.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix-for-Cpp-4.0.3\Matrix\Matrix\MatrixCalc.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="Plot.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="NeuralNetworkDoc.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="MatrixBase.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
