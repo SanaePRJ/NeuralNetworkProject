@@ -47,15 +47,21 @@ namespace Sanae {
 			static Sanae::Layer_Affine <ty> Affine1(arg_Input_Nodes, arg_Hidden_Nodes,&engine);
 			Affine1.LearnRate = LearnRate;
 
-			static Sanae::Layer_Sigmoid<ty> Sigmoid1;
-			static Sanae::Layer_Affine <ty> Affine2 (arg_Hidden_Nodes, arg_Output_Nodes, &engine);
+			static Sanae::Layer_ReLU<ty> Sigmoid1;
+			static Sanae::Layer_Affine <ty> Affine2 (arg_Hidden_Nodes, arg_Hidden_Nodes, &engine);
 			Affine2.LearnRate = LearnRate;
+
+			static Sanae::Layer_ReLU<ty> Sigmoid2;
+			static Sanae::Layer_Affine <ty> Affine3(arg_Hidden_Nodes, arg_Output_Nodes, &engine);
+			Affine3.LearnRate = LearnRate;
 
 			static Sanae::Layer_SoftMaxWithLoss<double> swl;
 
 			Layers.push_back((Sanae::Layer_Base<ty>*) &Affine1);
 			Layers.push_back((Sanae::Layer_Base<ty>*) &Sigmoid1);
 			Layers.push_back((Sanae::Layer_Base<ty>*) &Affine2);
+			Layers.push_back((Sanae::Layer_Base<ty>*) & Sigmoid2);
+			Layers.push_back((Sanae::Layer_Base<ty>*) & Affine3);
 			Layers.push_back((Sanae::Layer_Base<ty>*) &swl);
 		}
 

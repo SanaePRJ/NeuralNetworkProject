@@ -191,7 +191,30 @@ public:
 		return;
 	}
 
+	bool MoveToLine
+	(
+		size_t Line
+	) 
+	{
+		bool eof = false;
 
+		this->Ifs.seekg(0);
+		size_t NewLineCount = 0;
+
+		char buf=0;
+		for (uint64_t i = 0; NewLineCount < Line;i++,this->Ifs.get(buf)) {
+			if (this->Ifs.eof()) {
+				this->Ifs.seekg(0);
+				eof = true;
+			}
+			
+			if (buf == '\n')
+				NewLineCount++;
+		}
+		this->Ifs.get(buf);
+
+		return eof;
+	}
 };
 
 
