@@ -27,7 +27,7 @@
 namespace Sanae {
 
 
-	template<typename ty>
+	template<typename ty,typename ActClass = Sanae::Layer_ReLU<ty>,typename ActWithLoss=Sanae::Layer_SoftMaxWithLoss<ty>>
 	class NN
 	{
 	private:
@@ -39,30 +39,37 @@ namespace Sanae {
 
 
 	public:
-		NN(uint64_t arg_Input_Nodes, uint64_t arg_Hidden_Nodes, uint64_t arg_Output_Nodes,double arg_Learn_rate, unsigned int arg_Seed)
+		NN(uint64_t arg_Input_Nodes, uint64_t arg_Hidden_Nodes, uint64_t arg_Output_Nodes,double arg_Learn_rate, unsigned int arg_Seed, uint64_t arg_Hidden_Layers)
 			:	LearnRate(arg_Learn_rate)
 		{
 			std::default_random_engine engine(arg_Seed);
 
+			//“ü—Í‘wAffine
 			static Sanae::Layer_Affine <ty> Affine1(arg_Input_Nodes, arg_Hidden_Nodes,&engine);
 			Affine1.LearnRate = LearnRate;
 
-			static Sanae::Layer_ReLU<ty> Sigmoid1;
-			static Sanae::Layer_Affine <ty> Affine2 (arg_Hidden_Nodes, arg_Hidden_Nodes, &engine);
-			Affine2.LearnRate = LearnRate;
+			static ActClass Activation1;
 
-			static Sanae::Layer_ReLU<ty> Sigmoid2;
+			Layers.push_back((Sanae::Layer_Base<ty>*) & Affine1 );
+			Layers.push_back((Sanae::Layer_Base<ty>*) & Activation1);
+
+			//’†ŠÔ‘w
+			static std::vector<Sanae::Layer_Affine<ty>> Affine2    (arg_Hidden_Layers, Sanae::Layer_Affine<ty>(arg_Hidden_Nodes,arg_Hidden_Nodes,&engine));
+			static std::vector<ActClass>                Activation2(arg_Hidden_Layers);
+
+			for (uint64_t i = 0; i < arg_Hidden_Layers;i++) {
+				Layers.push_back(static_cast<Sanae::Layer_Base<ty>*>(&Affine2[i]));
+				Layers.push_back(static_cast<Sanae::Layer_Base<ty>*>(&Activation2[i]));
+			}
+
+			//o—Í‘w
 			static Sanae::Layer_Affine <ty> Affine3(arg_Hidden_Nodes, arg_Output_Nodes, &engine);
 			Affine3.LearnRate = LearnRate;
 
-			static Sanae::Layer_SoftMaxWithLoss<double> swl;
+			static ActWithLoss awl;
 
-			Layers.push_back((Sanae::Layer_Base<ty>*) &Affine1);
-			Layers.push_back((Sanae::Layer_Base<ty>*) &Sigmoid1);
-			Layers.push_back((Sanae::Layer_Base<ty>*) &Affine2);
-			Layers.push_back((Sanae::Layer_Base<ty>*) & Sigmoid2);
 			Layers.push_back((Sanae::Layer_Base<ty>*) & Affine3);
-			Layers.push_back((Sanae::Layer_Base<ty>*) &swl);
+			Layers.push_back((Sanae::Layer_Base<ty>*) &awl);
 		}
 
 		//—\‘ª‚·‚éB
