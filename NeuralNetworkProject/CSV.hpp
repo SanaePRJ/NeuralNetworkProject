@@ -397,6 +397,18 @@ public:
 	}
 
 	/*----------------------------------------------
+	* Write line data to buffer.
+	* データを書き込む。
+	----------------------------------------------*/
+	template<typename _DataType> WriteCSV& operator << (std::vector<_DataType> _DataList)
+	{
+		for (_DataType i : _DataList)
+			this->Buffer_Write(i);
+
+		return *this;
+	}
+
+	/*----------------------------------------------
 	* Write buffer data to file.
 	* バッファをファイルに書き込む。
 	----------------------------------------------*/

@@ -56,7 +56,7 @@ namespace Sanae{
 
 
 	public:
-		size_t thread = 4;
+		size_t thread = 2;
 
 		Matrix ();
 		Matrix (std::pair<size_t,size_t>);

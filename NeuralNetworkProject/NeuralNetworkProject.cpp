@@ -15,16 +15,16 @@ void makemnist();
 
 
 int main() {
-	mnist();
+	makemnist();
 }
 
 
 /*--------------OR回路の学習--------------*/
 void OR() {
 	uint32_t seed = 2024;
-	size_t   n    = 5000;
+	size_t   n = 500;
 
-	Sanae::NN<double> OR(2, 3, 2, 0.03, seed,2);
+	Sanae::NN<double> OR(2, 3, 2, 0.03, seed, 2);
 	srand(seed);
 
 	for (size_t i = 0; i < n; i++) {
@@ -91,6 +91,10 @@ void mnist() {
 	//入力ノード数:784,中間層ノード数:50,出力層ノード数:10,学習率:30%,中間層:2層
 	Sanae::NN<double> Machine(784, 200, 10, 0.3, rand(),2);
 
+	try {
+		Machine.Load("MnistLearn.csv");
+	}
+	catch (std::exception e) {}
 
 	//mnistデータは28*28
 	const uint64_t MnistSize = 784;
@@ -98,7 +102,7 @@ void mnist() {
 	uint64_t       batch     = 50;
 
 	//学習回数
-	uint64_t       LearnCount   = 500;
+	uint64_t       LearnCount   = 50;
 	//予測回数
 	uint64_t       PredictCount = 500;
 
@@ -179,6 +183,10 @@ void mnist() {
 		accuracy += predict();
 
 	std::cout << "正答率:" << accuracy / static_cast<double>(PredictCount) * 100 << "%";
+
+	std::cout << "保存する場合は何かキーを押してください。";
+	system("pause");
+	Machine.Save("MnistLearn.csv");
 }
 
 
@@ -187,7 +195,12 @@ void makemnist() {
 	srand((uint32_t)time(NULL));
 
 	Sanae::ReadCSV    mnist("mnist_train.csv");
-	Sanae::NN<double, Sanae::Layer_ReLU<double>, Sanae::Layer_IdentityWithLoss<double>> Machine(10, 200, 784, 0.3, rand(), 4);
+	Sanae::NN<double, Sanae::Layer_ReLU<double>, Sanae::Layer_IdentityWithLoss<double>> Machine(10, 200, 784, 0.3, rand(), 2);
+
+	try {
+		Machine.Load("MnistMake.csv");
+	}
+	catch (std::exception e) {}
 
 	//mnistデータは28*28
 	const uint64_t MnistSize = 784;
@@ -197,7 +210,7 @@ void makemnist() {
 	//学習回数
 	uint64_t       LearnCount = 500;
 	//予測回数
-	uint64_t       PredictCount = 500;
+	uint64_t       PredictCount = 20;
 
 
 	//Mnistデータの答えと画像データをCSVファイルから読み取る。
@@ -231,6 +244,7 @@ void makemnist() {
 			A[i] = { MnistData.second };
 		}
 
+		
 		//学習->返り値として損失関数の返り値を返す。
 		return Machine.Learn(Q, A);
 		};
@@ -257,7 +271,7 @@ void makemnist() {
 
 		system("pause");
 		};
-
+	
 	//学習させる
 	for (size_t i = 0; i < LearnCount; i++) {
 		if (i % (LearnCount / 50) == 0)
@@ -268,9 +282,14 @@ void makemnist() {
 
 	//testデータを開く
 	mnist.close();
+
 	mnist.open("mnist_test.csv");
 
 	//予測
 	for (size_t i = 0; i < PredictCount; i++)
 		predict();
+
+	std::cout << "保存する場合は何かキーを押してください。";
+	system("pause");
+	Machine.Save("MnistMake.csv");
 }

@@ -327,11 +327,14 @@ namespace Sanae {
 	//Affineレイヤー
 	template<typename ty>
 	class Layer_Affine :public Layer_Base<ty> {
-	private:
-		Sanae::Matrix<ty> Weight,DWeight;  //重み    ,(δE/δW)
-		Sanae::Matrix<ty> Bias  ,DBias;    //バイアス,(δE/δB)
+	public:
+		Sanae::Matrix<ty> Weight,Bias;
 
-		Sanae::Matrix<ty> Arg_Input;       //入力値
+	private:
+		Sanae::Matrix<ty> DWeight;  //(δE/δW)
+		Sanae::Matrix<ty> DBias;    //(δE/δB)
+
+		Sanae::Matrix<ty> Arg_Input;//入力値
 
 	public:
 		bool   is_affine = true;  //Affineレイヤー
