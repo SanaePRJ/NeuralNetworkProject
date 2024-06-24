@@ -14,7 +14,7 @@
 
 
 /*-----Include-----*/
-#include "Matrix-for-Cpp-4.0.3/Matrix/Matrix/Matrix.hpp"
+#include "Matrix/Matrix/Matrix"
 
 #include <iostream>
 #include <string>

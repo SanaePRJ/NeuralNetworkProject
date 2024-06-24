@@ -19,7 +19,7 @@
 #include <fstream>
 #include <stdexcept>
 
-#include "Matrix-for-Cpp-4.0.3/Matrix/Matrix/Matrix.hpp"
+#include "Matrix/Matrix/Matrix"
 #include "NNLayers.hpp"
 #include "CSV.hpp"
 
@@ -140,7 +140,7 @@ namespace Sanae {
 				//レイヤ番号,Weightが始まることを書き込み
 				save << i / 2 << "\n" << "Weight" << "\n";
 				//Weight書き込み
-				for (uint64_t k = 0; k < LayerP->Weight.get_row(); k++) {
+				for (uint64_t k = 0; k < LayerP->Weight.GetRow(); k++) {
 					save << LayerP->Weight[k] << "\n";
 					save.flush();
 				}
@@ -148,7 +148,7 @@ namespace Sanae {
 				//biasが始まることを書き込み
 				save << "Bias" << "\n";
 				//Bias書き込み
-				for (uint64_t k = 0; k < LayerP->Bias.get_row(); k++) {
+				for (uint64_t k = 0; k < LayerP->Bias.GetRow(); k++) {
 					save << LayerP->Bias[k] << "\n";
 					save.flush();
 				}
@@ -209,8 +209,8 @@ namespace Sanae {
 					throw std::invalid_argument("The format of this file is incorrect.[weight]");
 
 				//Weightの各要素を読み込み
-				for (size_t row = 0; row < LayerP->Weight.get_row(); row++)
-					for (size_t column = 0; column < LayerP->Weight.get_column(); column++)
+				for (size_t row = 0; row < LayerP->Weight.GetRow(); row++)
+					for (size_t column = 0; column < LayerP->Weight.GetColumn(); column++)
 						LayerP->Weight[row][column] = std::stod(load.ReadData());
 
 				//Biasがない場合書式が違う
@@ -218,8 +218,8 @@ namespace Sanae {
 					throw std::invalid_argument("The format of this file is incorrect.[bias]");
 
 				//Biasの各要素を読み込み
-				for (size_t row = 0; row < LayerP->Bias.get_row(); row++)
-					for (size_t column = 0; column < LayerP->Bias.get_column(); column++)
+				for (size_t row = 0; row < LayerP->Bias.GetRow(); row++)
+					for (size_t column = 0; column < LayerP->Bias.GetColumn(); column++)
 						LayerP->Bias[row][column] = std::stod(load.ReadData());
 			}
 

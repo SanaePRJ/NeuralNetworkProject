@@ -53,13 +53,7 @@
     <ClInclude Include="NeuralNetwork.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Matrix-for-Cpp-4.0.3\Matrix\Matrix\MatrixCalc.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Plot.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix-for-Cpp-4.0.3\Matrix\Matrix\Matrix.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

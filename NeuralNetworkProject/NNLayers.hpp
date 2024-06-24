@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "Matrix-for-Cpp-4.0.3/Matrix/Matrix/Matrix.hpp"
+#include "Matrix/Matrix/Matrix"
 
 
 
@@ -39,11 +39,11 @@ namespace Sanae {
 	double Cross_Entropy_Error(Sanae::Matrix<ty>* Out, Sanae::Matrix<ty>* Teach)
 	{
 		//実際の出力値と教師データのサイズが違う場合
-		if (Out->get_row() != Teach->get_row() || Out->get_column() != Teach->get_column())
+		if (Out->GetRow() != Teach->GetRow() || Out->GetColumn() != Teach->GetColumn())
 			throw std::invalid_argument("Must be same size.");
 
 		//データは一行で渡されるため行数はbatch数数
-		size_t batch_size = Out->get_row();
+		size_t batch_size = Out->GetRow();
 
 		double ans        = 0;    //誤差
 		double delta      = 1e-7; //log(0)になるのを防ぐため
@@ -52,7 +52,7 @@ namespace Sanae {
 		for (size_t row = 0; row < batch_size; row++)
 		{
 			//-∑[k=1,K](Teach[n][k]log(Out[n][k]))
-			for (size_t column = 0; column < Out->get_column(); column++)
+			for (size_t column = 0; column < Out->GetColumn(); column++)
 			{
 				double predicted = (*Out  )[row][column];
 				double target    = (*Teach)[row][column];
@@ -71,11 +71,11 @@ namespace Sanae {
 	double Mean_Squared_Error(Sanae::Matrix<ty>* Out, Sanae::Matrix<ty>* Teach)
 	{
 		//実際の出力値と教師データのサイズが違う場合
-		if (Out->get_row() != Teach->get_row() || Out->get_column() != Teach->get_column())
+		if (Out->GetRow() != Teach->GetRow() || Out->GetColumn() != Teach->GetColumn())
 			throw std::invalid_argument("Must be same size.");
 
 		
-		size_t batch_size = Out->get_row(); //データは一行で渡されるため行数はbatch数数
+		size_t batch_size = Out->GetRow(); //データは一行で渡されるため行数はbatch数数
 		double ans        = 0;              //誤差
 
 		//nを受け取る,∑[k->K]((Out[n][k]-Teach[n][k])^2)
@@ -83,7 +83,7 @@ namespace Sanae {
 				//返り値
 				double ans = 0;
 
-				for (size_t column = 0; column < Out->get_column(); column++)
+				for (size_t column = 0; column < Out->GetColumn(); column++)
 					ans += (double)std::pow(((*Out)[arg_row][column] - (*Teach)[arg_row][column]), 2);
 
 				return ans;
@@ -115,14 +115,14 @@ namespace Sanae {
 		auto get_sum = [&arg](size_t arg_row,ty arg_max)->ty{
 				ty ans = 0;
 
-				for (size_t column = 0; column < arg->get_column(); column++)
+				for (size_t column = 0; column < arg->GetColumn(); column++)
 					ans += std::exp((*arg)[arg_row][column] - arg_max);
 
 				return ans;
 			};
 
-		size_t            batch_size = arg->get_row();   //データは一行で渡されるため行数はbatch数数
-		Sanae::Matrix<ty> ret        = std::pair<size_t,size_t>{arg->get_row(),arg->get_column()};  //サイズを設定
+		size_t            batch_size = arg->GetRow();   //データは一行で渡されるため行数はbatch数数
+		Sanae::Matrix<ty> ret        = std::pair<size_t,size_t>{arg->GetRow(),arg->GetColumn()};  //サイズを設定
 		
 		//O[r]
 		for (size_t row = 0; row < batch_size; row++) {
@@ -130,7 +130,7 @@ namespace Sanae {
 			ty sum = get_sum(row,max);
 
 			//{e^a[r][k]-Max[r]} / {∑[i=1->n](e^a[r][i]-Max[r])}
-			for (size_t column = 0; column < arg->get_column(); column++)
+			for (size_t column = 0; column < arg->GetColumn(); column++)
 				ret[row][column] = std::exp((*arg)[row][column] - max) / sum;
 		}
 
@@ -183,11 +183,11 @@ namespace Sanae {
 		inline virtual Sanae::Matrix<ty> forward(Sanae::Matrix<ty>* arg) override
 		{
 			//サイズ設定
-			out = std::pair<size_t,size_t>{arg->get_row(),arg->get_column()};
+			out = std::pair<size_t,size_t>{arg->GetRow(),arg->GetColumn()};
 
 			//すべての要素をSigmoid関数に通す。
-			for (size_t row = 0; row < arg->get_row();row++) {
-				for (size_t column = 0; column < arg->get_column();column++) {
+			for (size_t row = 0; row < arg->GetRow();row++) {
+				for (size_t column = 0; column < arg->GetColumn();column++) {
 					out[row][column] = Sigmoid<ty>((*arg)[row][column]);
 				}
 			}
@@ -197,15 +197,15 @@ namespace Sanae {
 		inline virtual Sanae::Matrix<ty> backward(Sanae::Matrix<ty>* arg) override 
 		{
 			//逆伝番のサイズが間違っている場合
-			if (out.get_row() != arg->get_row() || out.get_column() != arg->get_column())
+			if (out.GetRow() != arg->GetRow() || out.GetColumn() != arg->GetColumn())
 				throw std::invalid_argument("Must be same size.");
 
 			//重み改善の値
-			Sanae::Matrix<ty> dx = std::pair<size_t, size_t>{out.get_row(),out.get_column()};
+			Sanae::Matrix<ty> dx = std::pair<size_t, size_t>{out.GetRow(),out.GetColumn()};
 
 			//すべての要素を計算
-			for (size_t row = 0; row < arg->get_row(); row++) {
-				for (size_t column = 0; column < arg->get_column(); column++) {
+			for (size_t row = 0; row < arg->GetRow(); row++) {
+				for (size_t column = 0; column < arg->GetColumn(); column++) {
 					//Sigmoid'(x) = Sigmoid(x)*(1-Sigmoid(x))
 					dx[row][column] = (*arg)[row][column] * (1 - out[row][column]) * out[row][column];
 				}
@@ -226,11 +226,11 @@ namespace Sanae {
 		{
 			
 			Sanae::Matrix<ty> out = *arg;  //返り値
-			Mask = std::pair<size_t, size_t>{ arg->get_row(),arg->get_column() };  //Maskのサイズ設定
+			Mask = std::pair<size_t, size_t>{ arg->GetRow(),arg->GetColumn() };  //Maskのサイズ設定
 
 			//すべての要素に対して
-			for (size_t row = 0; row < arg->get_row(); row++) {
-				for (size_t column = 0; column < arg->get_column(); column++) {
+			for (size_t row = 0; row < arg->GetRow(); row++) {
+				for (size_t column = 0; column < arg->GetColumn(); column++) {
 					//0を超えるとき1にすることで次の層,前の層へ送る
 					if ((*arg)[row][column] > 0) {
 						Mask[row][column] = 1;
@@ -268,17 +268,17 @@ namespace Sanae {
 		}
 		inline virtual Sanae::Matrix<ty> backward()
 		{
-			size_t bachsize = Out.get_row();  //データは一行で渡されるため行数はbatch数数
+			size_t bachsize = Out.GetRow();  //データは一行で渡されるため行数はbatch数数
 
 			//batchサイズと教師データのbatchサイズが異なる場合
-			if (bachsize != Teach.get_row())
+			if (bachsize != Teach.GetRow())
 				throw std::invalid_argument("Must be same bachsize.");
 
 			//δE/δW = Out-Teach
 			Sanae::Matrix<ty> Dout = Out - Teach;
 			
-			for (size_t row = 0; row < Dout.get_row(); row++) {
-				for (size_t column = 0; column < Dout.get_column(); column++) {
+			for (size_t row = 0; row < Dout.GetRow(); row++) {
+				for (size_t column = 0; column < Dout.GetColumn(); column++) {
 					Dout[row][column] /= bachsize;
 				}
 			}
@@ -305,17 +305,17 @@ namespace Sanae {
 		}
 		inline virtual Sanae::Matrix<ty> backward()
 		{
-			size_t bachsize = Out.get_row();  //データは一行で渡されるため行数はbatch数数
+			size_t bachsize = Out.GetRow();  //データは一行で渡されるため行数はbatch数数
 
 			//batch最右と教師データのbatchサイズが異なっている場合
-			if (bachsize != Teach.get_row())
+			if (bachsize != Teach.GetRow())
 				throw std::invalid_argument("Must be same bachsize.");
 
 			//δE/δW=Out-Teach
 			Sanae::Matrix<ty> Dout = Out - Teach;
 
-			for (size_t row = 0; row < Dout.get_row(); row++) {
-				for (size_t column = 0; column < Dout.get_column(); column++) {
+			for (size_t row = 0; row < Dout.GetRow(); row++) {
+				for (size_t column = 0; column < Dout.GetColumn(); column++) {
 					Dout[row][column] /= bachsize;
 				}
 			}
@@ -358,9 +358,9 @@ namespace Sanae {
 			Arg_Input = *arg;  //入力を保存
 
 			std::vector<ty>   buf     = Bias[0];  //バイアスを一列取得
-			Sanae::Matrix<ty> BiasBuf = std::pair<size_t,size_t>{arg->get_row(),buf.size()};  //batchサイズ分増やす
+			Sanae::Matrix<ty> BiasBuf = std::pair<size_t,size_t>{arg->GetRow(),buf.size()};  //batchサイズ分増やす
 
-			for (size_t i = 0; i < arg->get_row(); i++)
+			for (size_t i = 0; i < arg->GetRow(); i++)
 				BiasBuf[i] = buf;
 
 			//Input*Weight+Bias
@@ -371,10 +371,10 @@ namespace Sanae {
 			DWeight               = Arg_Input.Transpose() * (*arg); //δE/δW
 
 			//バイアスの傾きをbatchサイズ分求める
-			DBias = std::pair<size_t, size_t>{1,arg->get_column()};
+			DBias = std::pair<size_t, size_t>{1,arg->GetColumn()};
 
-			for (size_t column = 0; column < arg->get_column();column++) {
-				for (size_t row = 0; row < arg->get_row();row++) {
+			for (size_t column = 0; column < arg->GetColumn();column++) {
+				for (size_t row = 0; row < arg->GetRow();row++) {
 					DBias[0][column] += (*arg)[row][column];
 				}
 			}

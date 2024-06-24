@@ -2,7 +2,7 @@
 #include <random>
 #include <time.h>
 
-#include "Matrix-for-Cpp-4.0.3/Matrix/Matrix/Matrix.hpp"
+#include "Matrix/Matrix/Matrix"
 #include "CSV.hpp"
 #include "Plot.hpp"
 #include "NeuralNetwork.hpp"

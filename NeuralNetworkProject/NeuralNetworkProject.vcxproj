@@ -166,8 +166,6 @@
     <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixOperator.hpp" />
     <ClInclude Include="Matrix-for-Cpp-4.0.2\Matrix\Matrix\MatrixUtil.hpp" />
     <ClInclude Include="CSV.hpp" />
-    <ClInclude Include="Matrix-for-Cpp-4.0.3\Matrix\Matrix\Matrix.hpp" />
-    <ClInclude Include="Matrix-for-Cpp-4.0.3\Matrix\Matrix\MatrixCalc.hpp" />
     <ClInclude Include="NeuralNetwork.hpp" />
     <ClInclude Include="Plot.hpp" />
   </ItemGroup>
