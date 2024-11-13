@@ -1,201 +1,201 @@
 # NeuralNetwork-SanaeProject
-‚±‚ÌƒŠƒ|ƒWƒgƒŠ‚Å‚ÍNeuralNetwork‚ğˆµ‚¤ƒNƒ‰ƒX‚ğì¬‚µ‚Ä‚¢‚éB  
-"ƒ[ƒ‚©‚çì‚éDeepLearning"‚ğQl‚ÉTanhƒŒƒCƒ„[‚â‘‚©‚ê‚Ä‚¢‚È‚©‚Á‚½“ñæ˜aŒë·‚Ìƒ~ƒjƒoƒbƒ`ˆ—‘Î‰ƒŒƒCƒ„[‚È‚Ç‚ğ’Ç‰Á‚µ‚Ä‚¢‚éB  
+ã“ã®ãƒªãƒã‚¸ãƒˆãƒªã§ã¯NeuralNetworkã‚’æ‰±ã†ã‚¯ãƒ©ã‚¹ã‚’ä½œæˆã—ã¦ã„ã‚‹ã€‚  
+"ã‚¼ãƒ­ã‹ã‚‰ä½œã‚‹DeepLearning"ã‚’å‚è€ƒã«Tanhãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚„æ›¸ã‹ã‚Œã¦ã„ãªã‹ã£ãŸäºŒä¹—å’Œèª¤å·®ã®ãƒŸãƒ‹ãƒãƒƒãƒå‡¦ç†å¯¾å¿œãƒ¬ã‚¤ãƒ¤ãƒ¼ãªã©ã‚’è¿½åŠ ã—ã¦ã„ã‚‹ã€‚  
   
-s—ñ‚Ì‰‰Z‚Å‚Í“–Project‚ÅŠJ”­‚µ‚Ä‚¢‚éMatrixŒ^‚ğg—p‚µ‚Ä‚¢‚éB  
-mnistƒf[ƒ^‚ÍŠe©‚Åƒ_ƒEƒ“ƒ[ƒh‚µ‚Ä‚­‚¾‚³‚¢B
+è¡Œåˆ—ã®æ¼”ç®—ã§ã¯å½“Projectã§é–‹ç™ºã—ã¦ã„ã‚‹Matrixå‹ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹ã€‚  
+mnistãƒ‡ãƒ¼ã‚¿ã¯å„è‡ªã§ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ã¦ãã ã•ã„ã€‚
 
-# ƒTƒ“ƒvƒ‹ƒR[ƒh
-## mnistƒf[ƒ^‚É‚æ‚é”š‚Ì¯•Ê
-mnistƒf[ƒ^ƒZƒbƒg‚ğg—p‚µ‰æ‘œ‚Ì”š‚ğ¯•Ê‚·‚éB
+# ã‚µãƒ³ãƒ—ãƒ«ã‚³ãƒ¼ãƒ‰
+## mnistãƒ‡ãƒ¼ã‚¿ã«ã‚ˆã‚‹æ•°å­—ã®è­˜åˆ¥
+mnistãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã‚’ä½¿ç”¨ã—ç”»åƒã®æ•°å­—ã‚’è­˜åˆ¥ã™ã‚‹ã€‚
+```cpp
+void mnist() {
+	srand((uint32_t)time(NULL));
 
-	void mnist() {
-		srand((uint32_t)time(NULL));
-
-		Sanae::ReadCSV    mnist("mnist_train.csv");
-		//“ü—Íƒm[ƒh”:784,’†ŠÔ‘wƒm[ƒh”:50,o—Í‘wƒm[ƒh”:10,ŠwK—¦:30%,’†ŠÔ‘w:2‘w
-		Sanae::NN<double> Machine(784, 200, 10, 0.3, rand(),2);
-
-
-		//mnistƒf[ƒ^‚Í28*28
-		const uint64_t MnistSize = 784;
-		//batchƒTƒCƒY
-		uint64_t       batch     = 50;
-
-		//ŠwK‰ñ”
-		uint64_t       LearnCount   = 500;
-		//—\‘ª‰ñ”
-		uint64_t       PredictCount = 500;
+	Sanae::ReadCSV    mnist("mnist_train.csv");
+	//å…¥åŠ›ãƒãƒ¼ãƒ‰æ•°:784,ä¸­é–“å±¤ãƒãƒ¼ãƒ‰æ•°:50,å‡ºåŠ›å±¤ãƒãƒ¼ãƒ‰æ•°:10,å­¦ç¿’ç‡:30%,ä¸­é–“å±¤:2å±¤
+	Sanae::NN<double> Machine(784, 200, 10, 0.3, rand(),2);
 
 
-		//Mnistƒf[ƒ^‚Ì“š‚¦‚Æ‰æ‘œƒf[ƒ^‚ğCSVƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İæ‚éB
-		auto get_mnist = [&mnist, &Machine, &MnistSize]() -> std::pair<double, std::vector<double>> {
-			//“š‚¦
-			double Answer = std::stoi(mnist.ReadData());
+	//mnistãƒ‡ãƒ¼ã‚¿ã¯28*28
+	const uint64_t MnistSize = 784;
+	//batchã‚µã‚¤ã‚º
+	uint64_t       batch     = 50;
 
-			//‰æ‘œƒf[ƒ^‚ğ“Ç‚İ‚Ş
-			std::vector<double> Question(MnistSize, 0);
-			for (uint64_t i = 0; i < MnistSize; i++)
-				Question[i] = (std::stod(mnist.ReadData()) / 255 * 0.99 + 0.0001);   //³‹K‰»
+	//å­¦ç¿’å›æ•°
+	uint64_t       LearnCount   = 500;
+	//äºˆæ¸¬å›æ•°
+	uint64_t       PredictCount = 500;
 
-			//“š‚¦,‰æ‘œƒf[ƒ^‚ğpair‚Å‘—‚éB
-			return std::pair<double, std::vector<double>>{Answer, Question};
-			};
 
-		//ŠwK‚³‚¹‚éB
-		auto Learn = [&get_mnist, &mnist, &Machine, &batch, &MnistSize]() {
-			Sanae::Matrix<double> A = std::pair<size_t, size_t>{ batch,0 };   //–â‘è
-			Sanae::Matrix<double> Q = std::pair<size_t, size_t>{ batch,0 };   //“š‚¦
+	//Mnistãƒ‡ãƒ¼ã‚¿ã®ç­”ãˆã¨ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’CSVãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿å–ã‚‹ã€‚
+	auto get_mnist = [&mnist, &Machine, &MnistSize]() -> std::pair<double, std::vector<double>> {
+		//ç­”ãˆ
+		double Answer = std::stoi(mnist.ReadData());
 
-			//batchƒTƒCƒY•ª‚¾‚¯“Ç‚İæ‚éB
-			for (size_t i = 0; i < batch; i++) {
-				std::pair<double, std::vector<double>> MnistData = get_mnist();   //Mnistƒf[ƒ^“Ç‚İæ‚è
+		//ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
+		std::vector<double> Question(MnistSize, 0);
+		for (uint64_t i = 0; i < MnistSize; i++)
+			Question[i] = (std::stod(mnist.ReadData()) / 255 * 0.99 + 0.0001);   //æ­£è¦åŒ–
 
-				//“š‚¦‚ğ”z—ñ‚É‚·‚éB3->{0,0,0,1,0,0,0,0,0,0}
-				std::vector<double> buf_A(10, 0);
-				buf_A[static_cast<uint64_t>(MnistData.first)] = 1;
+		//ç­”ãˆ,ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’pairã§é€ã‚‹ã€‚
+		return std::pair<double, std::vector<double>>{Answer, Question};
+		};
 
-				A[i] = { buf_A };
-				Q[i] = { MnistData.second };
-			}
+	//å­¦ç¿’ã•ã›ã‚‹ã€‚
+	auto Learn = [&get_mnist, &mnist, &Machine, &batch, &MnistSize]() {
+		Sanae::Matrix<double> A = std::pair<size_t, size_t>{ batch,0 };   //å•é¡Œ
+		Sanae::Matrix<double> Q = std::pair<size_t, size_t>{ batch,0 };   //ç­”ãˆ
 
-			//ŠwK->•Ô‚è’l‚Æ‚µ‚Ä‘¹¸ŠÖ”‚Ì•Ô‚è’l‚ğ•Ô‚·B
-			return Machine.Learn(Q, A);
-			};
+		//batchã‚µã‚¤ã‚ºåˆ†ã ã‘èª­ã¿å–ã‚‹ã€‚
+		for (size_t i = 0; i < batch; i++) {
+			std::pair<double, std::vector<double>> MnistData = get_mnist();   //Mnistãƒ‡ãƒ¼ã‚¿èª­ã¿å–ã‚Š
 
-		//—\‘ª
-		auto predict = [&mnist, &Machine, &get_mnist, &MnistSize]() {
-			//mnistƒf[ƒ^“Ç‚İ‚İ
-			std::pair<double, std::vector<double>> MnistData = get_mnist();
+			//ç­”ãˆã‚’é…åˆ—ã«ã™ã‚‹ã€‚3->{0,0,0,1,0,0,0,0,0,0}
+			std::vector<double> buf_A(10, 0);
+			buf_A[static_cast<uint64_t>(MnistData.first)] = 1;
 
-			//‰æ‘œƒf[ƒ^‚ğŠi”[
-			Sanae::Matrix<double> Q = std::pair<size_t, size_t>{ 1,0 };
-			Q[0] = MnistData.second;
-
-			//—\‘ªŒ‹‰Ê‚ğA‚ÉŠi”[
-			Sanae::Matrix<double> A = Machine.Predict(Q);
-
-			//Å‘å’l‚ª“š‚¦‚Å‚ ‚é‚½‚ßÅ‘å’l‚Ì‚ ‚éindex‚ğ—\‘ªŒ‹‰Ê‚Æ‚·‚éB
-			std::vector<double>::iterator iter = std::max_element(A[0].begin(), A[0].end());
-			size_t index = std::distance(A[0].begin(), iter);
-
-			//³‰ğ‚Å‚ ‚Á‚½ê‡1,•s³‰ğ‚Å‚ ‚Á‚½ê‡‚Í0‚ğ•Ô‚·B
-			if (index != MnistData.first)
-				return 0;
-			else
-				return 1;
-			};
-
-		//ŠwK‚³‚¹‚é
-		for (size_t i = 0; i < LearnCount; i++) {
-			if (i % (LearnCount / 50) == 0)
-				std::cout << i / static_cast<double>(LearnCount) * 100 << "%...ŠwKŠ®—¹" << std::endl;
-
-			Learn();
+			A[i] = { buf_A };
+			Q[i] = { MnistData.second };
 		}
 
-		//testƒf[ƒ^‚ğŠJ‚­
-		mnist.close();
-		mnist.open("mnist_test.csv");
+		//å­¦ç¿’->è¿”ã‚Šå€¤ã¨ã—ã¦æå¤±é–¢æ•°ã®è¿”ã‚Šå€¤ã‚’è¿”ã™ã€‚
+		return Machine.Learn(Q, A);
+		};
 
-		//—\‘ª
-		double accuracy = 0;
-		for (size_t i = 0; i < PredictCount; i++)
-			accuracy += predict();
+	//äºˆæ¸¬
+	auto predict = [&mnist, &Machine, &get_mnist, &MnistSize]() {
+		//mnistãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
+		std::pair<double, std::vector<double>> MnistData = get_mnist();
 
-		std::cout << "³“š—¦:" << accuracy / static_cast<double>(PredictCount) * 100 << "%";
+		//ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´
+		Sanae::Matrix<double> Q = std::pair<size_t, size_t>{ 1,0 };
+		Q[0] = MnistData.second;
+
+		//äºˆæ¸¬çµæœã‚’Aã«æ ¼ç´
+		Sanae::Matrix<double> A = Machine.Predict(Q);
+
+		//æœ€å¤§å€¤ãŒç­”ãˆã§ã‚ã‚‹ãŸã‚æœ€å¤§å€¤ã®ã‚ã‚‹indexã‚’äºˆæ¸¬çµæœã¨ã™ã‚‹ã€‚
+		std::vector<double>::iterator iter = std::max_element(A[0].begin(), A[0].end());
+		size_t index = std::distance(A[0].begin(), iter);
+
+		//æ­£è§£ã§ã‚ã£ãŸå ´åˆ1,ä¸æ­£è§£ã§ã‚ã£ãŸå ´åˆã¯0ã‚’è¿”ã™ã€‚
+		if (index != MnistData.first)
+			return 0;
+		else
+			return 1;
+		};
+
+	//å­¦ç¿’ã•ã›ã‚‹
+	for (size_t i = 0; i < LearnCount; i++) {
+		if (i % (LearnCount / 50) == 0)
+			std::cout << i / static_cast<double>(LearnCount) * 100 << "%...å­¦ç¿’å®Œäº†" << std::endl;
+
+		Learn();
 	}
-## ”šƒf[ƒ^‚Ì¶¬
-mnist‚©‚çŠwK‚µ‚½‰æ‘œ‚©‚ç”š‚Ì‰æ‘œ‚ğ¶¬‚·‚éB
 
-	void makemnist() {
-		srand((uint32_t)time(NULL));
+	//testãƒ‡ãƒ¼ã‚¿ã‚’é–‹ã
+	mnist.close();
+	mnist.open("mnist_test.csv");
 
-		Sanae::ReadCSV    mnist("mnist_train.csv");
-		Sanae::NN<double, Sanae::Layer_ReLU<double>, Sanae::Layer_IdentityWithLoss<double>> Machine(10, 200, 784, 0.3, rand(), 4);
+	//äºˆæ¸¬
+	double accuracy = 0;
+	for (size_t i = 0; i < PredictCount; i++)
+		accuracy += predict();
 
-		//mnistƒf[ƒ^‚Í28*28
-		const uint64_t MnistSize = 784;
-		//batchƒTƒCƒY
-		uint64_t       batch = 50;
+	std::cout << "æ­£ç­”ç‡:" << accuracy / static_cast<double>(PredictCount) * 100 << "%";
+}
+## æ•°å­—ãƒ‡ãƒ¼ã‚¿ã®ç”Ÿæˆ
+mnistã‹ã‚‰å­¦ç¿’ã—ãŸç”»åƒã‹ã‚‰æ•°å­—ã®ç”»åƒã‚’ç”Ÿæˆã™ã‚‹ã€‚
 
-		//ŠwK‰ñ”
-		uint64_t       LearnCount = 500;
-		//—\‘ª‰ñ”
-		uint64_t       PredictCount = 500;
+void makemnist() {
+	srand((uint32_t)time(NULL));
+
+	Sanae::ReadCSV    mnist("mnist_train.csv");
+	Sanae::NN<double, Sanae::Layer_ReLU<double>, Sanae::Layer_IdentityWithLoss<double>> Machine(10, 200, 784, 0.3, rand(), 4);
+
+	//mnistãƒ‡ãƒ¼ã‚¿ã¯28*28
+	const uint64_t MnistSize = 784;
+	//batchã‚µã‚¤ã‚º
+	uint64_t       batch = 50;
+
+	//å­¦ç¿’å›æ•°
+	uint64_t       LearnCount = 500;
+	//äºˆæ¸¬å›æ•°
+	uint64_t       PredictCount = 500;
 
 
-		//Mnistƒf[ƒ^‚Ì“š‚¦‚Æ‰æ‘œƒf[ƒ^‚ğCSVƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İæ‚éB
-		auto get_mnist = [&mnist, &Machine, &MnistSize]() -> std::pair<double, std::vector<double>> {
-			//“š‚¦
-			double Answer = std::stoi(mnist.ReadData());
+	//Mnistãƒ‡ãƒ¼ã‚¿ã®ç­”ãˆã¨ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’CSVãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿å–ã‚‹ã€‚
+	auto get_mnist = [&mnist, &Machine, &MnistSize]() -> std::pair<double, std::vector<double>> {
+		//ç­”ãˆ
+		double Answer = std::stoi(mnist.ReadData());
 
-			//‰æ‘œƒf[ƒ^‚ğ“Ç‚İ‚Ş
-			std::vector<double> Question(MnistSize, 0);
-			for (uint64_t i = 0; i < MnistSize; i++)
-				Question[i] = (std::stod(mnist.ReadData()) / 255 * 0.99 + 0.0001);   //³‹K‰»
+		//ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
+		std::vector<double> Question(MnistSize, 0);
+		for (uint64_t i = 0; i < MnistSize; i++)
+			Question[i] = (std::stod(mnist.ReadData()) / 255 * 0.99 + 0.0001);   //æ­£è¦åŒ–
 
-			//“š‚¦,‰æ‘œƒf[ƒ^‚ğpair‚Å‘—‚éB
-			return std::pair<double, std::vector<double>>{Answer, Question};
-			};
+		//ç­”ãˆ,ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’pairã§é€ã‚‹ã€‚
+		return std::pair<double, std::vector<double>>{Answer, Question};
+		};
 
-		//ŠwK‚³‚¹‚éB
-		auto Learn = [&get_mnist, &mnist, &Machine, &batch, &MnistSize]() {
-			Sanae::Matrix<double> Q = std::pair<size_t, size_t>{ batch,0 };   //–â‘è
-			Sanae::Matrix<double> A = std::pair<size_t, size_t>{ batch,0 };   //“š‚¦
+	//å­¦ç¿’ã•ã›ã‚‹ã€‚
+	auto Learn = [&get_mnist, &mnist, &Machine, &batch, &MnistSize]() {
+		Sanae::Matrix<double> Q = std::pair<size_t, size_t>{ batch,0 };   //å•é¡Œ
+		Sanae::Matrix<double> A = std::pair<size_t, size_t>{ batch,0 };   //ç­”ãˆ
 
-			//batchƒTƒCƒY•ª‚¾‚¯“Ç‚İæ‚éB
-			for (size_t i = 0; i < batch; i++) {
-				std::pair<double, std::vector<double>> MnistData = get_mnist();   //Mnistƒf[ƒ^“Ç‚İæ‚è
+		//batchã‚µã‚¤ã‚ºåˆ†ã ã‘èª­ã¿å–ã‚‹ã€‚
+		for (size_t i = 0; i < batch; i++) {
+			std::pair<double, std::vector<double>> MnistData = get_mnist();   //Mnistãƒ‡ãƒ¼ã‚¿èª­ã¿å–ã‚Š
 
-				//“š‚¦‚ğ”z—ñ‚É‚·‚éB3->{0,0,0,1,0,0,0,0,0,0}
-				std::vector<double> buf_A(10, 0);
-				buf_A[static_cast<uint64_t>(MnistData.first)] = 1;
+			//ç­”ãˆã‚’é…åˆ—ã«ã™ã‚‹ã€‚3->{0,0,0,1,0,0,0,0,0,0}
+			std::vector<double> buf_A(10, 0);
+			buf_A[static_cast<uint64_t>(MnistData.first)] = 1;
 
-				Q[i] = { buf_A };
-				A[i] = { MnistData.second };
-			}
-
-			//ŠwK->•Ô‚è’l‚Æ‚µ‚Ä‘¹¸ŠÖ”‚Ì•Ô‚è’l‚ğ•Ô‚·B
-			return Machine.Learn(Q, A);
-			};
-
-		//—\‘ª
-		auto predict = [&mnist, &Machine, &get_mnist, &MnistSize]() {
-			Sanae::Matrix<double> Q = std::pair<size_t, size_t>{ 1,0 };   //–â‘è
-
-			std::pair<double, std::vector<double>> MnistData = get_mnist();   //Mnistƒf[ƒ^“Ç‚İæ‚è
-
-			//–â‘è‚ğ”z—ñ‚É‚·‚éB3->{0,0,0,1,0,0,0,0,0,0}
-			std::vector<double> buf_Q(10, 0);
-			buf_Q[static_cast<uint64_t>(MnistData.first)] = 1;
-			Q[0] = { buf_Q };
-
-			system("pause");
-			std::cout << MnistData.first << std::endl;
-
-			Sanae::Matrix<double> plot = Machine.Predict(Q);
-			for (size_t i = 0; i < plot[0].size(); i++)
-				plot[0][i] = (plot[0][i] - 0.0001) / 0.99 * 255;
-
-			Sanae::PLOT << plot[0];
-
-			system("pause");
-			};
-
-		//ŠwK‚³‚¹‚é
-		for (size_t i = 0; i < LearnCount; i++) {
-			if (i % (LearnCount / 50) == 0)
-				std::cout << i / static_cast<double>(LearnCount) * 100 << "%...ŠwKŠ®—¹" << std::endl;
-
-			Learn();
+			Q[i] = { buf_A };
+			A[i] = { MnistData.second };
 		}
 
-		//testƒf[ƒ^‚ğŠJ‚­
-		mnist.close();
-		mnist.open("mnist_test.csv");
+		//å­¦ç¿’->è¿”ã‚Šå€¤ã¨ã—ã¦æå¤±é–¢æ•°ã®è¿”ã‚Šå€¤ã‚’è¿”ã™ã€‚
+		return Machine.Learn(Q, A);
+		};
 
-		//—\‘ª
-		for (size_t i = 0; i < PredictCount; i++)
-			predict();
+	//äºˆæ¸¬
+	auto predict = [&mnist, &Machine, &get_mnist, &MnistSize]() {
+		Sanae::Matrix<double> Q = std::pair<size_t, size_t>{ 1,0 };   //å•é¡Œ
+
+		std::pair<double, std::vector<double>> MnistData = get_mnist();   //Mnistãƒ‡ãƒ¼ã‚¿èª­ã¿å–ã‚Š
+
+		//å•é¡Œã‚’é…åˆ—ã«ã™ã‚‹ã€‚3->{0,0,0,1,0,0,0,0,0,0}
+		std::vector<double> buf_Q(10, 0);
+		buf_Q[static_cast<uint64_t>(MnistData.first)] = 1;
+		Q[0] = { buf_Q };
+
+		system("pause");
+		std::cout << MnistData.first << std::endl;
+
+		Sanae::Matrix<double> plot = Machine.Predict(Q);
+		for (size_t i = 0; i < plot[0].size(); i++)
+			plot[0][i] = (plot[0][i] - 0.0001) / 0.99 * 255;
+
+		Sanae::PLOT << plot[0];
+
+		system("pause");
+		};
+
+	//å­¦ç¿’ã•ã›ã‚‹
+	for (size_t i = 0; i < LearnCount; i++) {
+		if (i % (LearnCount / 50) == 0)
+			std::cout << i / static_cast<double>(LearnCount) * 100 << "%...å­¦ç¿’å®Œäº†" << std::endl;
+		Learn();
 	}
+
+	//testãƒ‡ãƒ¼ã‚¿ã‚’é–‹ã
+	mnist.close();
+	mnist.open("mnist_test.csv");
+
+	//äºˆæ¸¬
+	for (size_t i = 0; i < PredictCount; i++)
+		predict();
+}
+```
